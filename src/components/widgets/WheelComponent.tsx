@@ -53,9 +53,9 @@ export default function WheelComponent({
   let spinStart = 0;
   let frames = 0;
 
-  // 🔵 Make canvas + center depend on size
+  // ✅ Canvas sized from wheel size, and wheel centered
   const canvasWidth = size * 2 + 120;
-  const canvasHeight = size * 2 + 120;
+  const canvasHeight = size * 2 + 160; // little extra space below for text
   const centerX = canvasWidth / 2;
   const centerY = size + 60;
 
@@ -81,6 +81,7 @@ export default function WheelComponent({
   const initCanvas = () => {
     let canvas: any = document.getElementById("canvas");
 
+    // Old IE fallback (kept from original)
     if (navigator.userAgent.indexOf("MSIE") !== -1) {
       canvas = document.createElement("canvas");
       canvas.setAttribute("width", String(canvasWidth));
@@ -204,6 +205,7 @@ export default function WheelComponent({
       lastAngle = angle;
     }
 
+    // center button
     ctx.beginPath();
     ctx.arc(centerX, centerY, 50, 0, PI2, false);
     ctx.closePath();
@@ -217,6 +219,7 @@ export default function WheelComponent({
     ctx.fillText(buttonText, centerX, centerY + 3);
     ctx.stroke();
 
+    // outer ring
     ctx.beginPath();
     ctx.arc(centerX, centerY, size, 0, PI2, false);
     ctx.closePath();
@@ -232,14 +235,19 @@ export default function WheelComponent({
     ctx.strokeStyle = contrastColor;
     ctx.fillStyle = contrastColor;
 
-    // 🔽 Move needle closer to the wheel
-    // top of circle is (centerY - size)
-    const baseY = centerY - size + 25; // base slightly inside the circle
-    const tipY = baseY - 25; // tip just above that
+    // Top of the circle
+    const topOfWheel = centerY - size;
+
+    // Flat edge just ABOVE the wheel
+    const baseY = topOfWheel - 20;
+    // Tip just INSIDE the wheel, pointing downwards
+    const tipY = topOfWheel + 10;
 
     ctx.beginPath();
-    ctx.moveTo(centerX + 20, baseY); // bottom right
-    ctx.lineTo(centerX - 20, baseY); // bottom left
+    // flat edge (top side of triangle)
+    ctx.moveTo(centerX - 20, baseY); // left
+    ctx.lineTo(centerX + 20, baseY); // right
+    // point facing down into the wheel
     ctx.lineTo(centerX, tipY); // tip
     ctx.closePath();
     ctx.fill();
