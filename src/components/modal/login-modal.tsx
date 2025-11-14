@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
-
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +51,7 @@ export function LoginModal({
   const { update } = useSession();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(LoginSchema),
@@ -76,14 +77,18 @@ export function LoginModal({
     });
 
     setIsSubmitting(false);
-    window.location.reload();
 
     if (result?.error) {
-      setTopError(result.error || "Unable to log in. Please try again.");
+      setLoginError("Invalid email or password");
+      toast.error("Login failed", {
+        description: "Invalid email or password",
+      });
       return;
     }
 
     await update();
+    window.location.reload();
+    router.refresh();
 
     form.reset();
     onOpenChange(false);
@@ -148,6 +153,10 @@ export function LoginModal({
                   </FormItem>
                 )}
               />
+
+              {loginError && (
+                <p className="text-sm text-red-500 text-center">{loginError}</p>
+              )}
 
               <GXButton
                 type="submit"

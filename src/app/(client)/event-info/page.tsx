@@ -198,7 +198,7 @@ export default function EventInfoPage() {
               </div>
             </section>
 
-            <div className="pt-4 border-t border-neutral-900 mt-6 flex justify-center lg:justify-start">
+            <div className="pt-4 border-t border-neutral-900 mt-6 sm:flex justify-center lg:justify-start hidden">
               <GXButton
                 variant="secondary"
                 onClick={() => router.push("/")}

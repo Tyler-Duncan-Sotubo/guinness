@@ -45,8 +45,6 @@ export default function LoginPage() {
       password: values.password,
     });
 
-    console.log(res);
-
     if (res?.error) {
       setLoginError("Invalid email or password");
       toast.error("Login failed", { description: "Invalid email or password" });

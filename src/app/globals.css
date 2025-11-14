@@ -153,4 +153,25 @@
   }
 }
 
+@layer base {
+  /* iOS + Chrome iOS both use WebKit */
+  @supports (-webkit-touch-callout: none) {
+    input,
+    select,
+    textarea,
+    button {
+      font-size: 16px;
+    }
+  }
+  /* Optional: do it for all small screens (covers Android too) */
+  @media (max-width: 640px) {
+    input,
+    select,
+    textarea,
+    button {
+      font-size: 16px;
+    }
+  }
+}
+
 /* e.g. in globals.css or spin-wheel.css */

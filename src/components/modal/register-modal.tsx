@@ -114,6 +114,7 @@ export function RegisterModal({
       // ✅ update session in-place
       await update();
       window.location.reload();
+      router.refresh();
 
       // 2) Clean up / notify parent / refresh
       form.reset();
@@ -141,12 +142,7 @@ export function RegisterModal({
       maxSpinsPerEvent,
     };
 
-    create(
-      payload,
-      setTopError,
-      () => form.reset(),
-      () => onOpenChange(false)
-    );
+    create(payload, setTopError);
   };
 
   return (
