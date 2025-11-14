@@ -17,7 +17,6 @@ type WheelProps = {
   downDuration?: number;
   fontFamily?: string;
 
-  // 🔹 NEW:
   canSpin?: boolean;
   onBlockedSpin?: () => void;
 };
@@ -53,8 +52,12 @@ export default function WheelComponent({
   const downTime = segments.length * downDuration;
   let spinStart = 0;
   let frames = 0;
-  const centerX = 300;
-  const centerY = 300;
+
+  // 🔵 Make canvas + center depend on size
+  const canvasWidth = size * 2 + 120;
+  const canvasHeight = size * 2 + 120;
+  const centerX = canvasWidth / 2;
+  const centerY = size + 60;
 
   useEffect(() => {
     wheelInit();
@@ -80,8 +83,8 @@ export default function WheelComponent({
 
     if (navigator.userAgent.indexOf("MSIE") !== -1) {
       canvas = document.createElement("canvas");
-      canvas.setAttribute("width", "1000");
-      canvas.setAttribute("height", "600");
+      canvas.setAttribute("width", String(canvasWidth));
+      canvas.setAttribute("height", String(canvasHeight));
       canvas.setAttribute("id", "canvas");
       document.getElementById("wheel")?.appendChild(canvas);
     }
@@ -168,7 +171,7 @@ export default function WheelComponent({
     ctx.lineTo(centerX, centerY);
     ctx.closePath();
 
-    const colorIndex = key % segColors.length; // 👈 important line
+    const colorIndex = key % segColors.length;
     ctx.fillStyle = segColors[colorIndex];
 
     ctx.fill();
@@ -229,10 +232,15 @@ export default function WheelComponent({
     ctx.strokeStyle = contrastColor;
     ctx.fillStyle = contrastColor;
 
+    // 🔽 Move needle closer to the wheel
+    // top of circle is (centerY - size)
+    const baseY = centerY - size + 25; // base slightly inside the circle
+    const tipY = baseY - 25; // tip just above that
+
     ctx.beginPath();
-    ctx.moveTo(centerX + 20, centerY - 50);
-    ctx.lineTo(centerX - 20, centerY - 50);
-    ctx.lineTo(centerX, centerY - 70);
+    ctx.moveTo(centerX + 20, baseY); // bottom right
+    ctx.lineTo(centerX - 20, baseY); // bottom left
+    ctx.lineTo(centerX, tipY); // tip
     ctx.closePath();
     ctx.fill();
 
@@ -249,27 +257,25 @@ export default function WheelComponent({
       ctx.fillStyle = primaryColor;
       ctx.font = `bold 1.5em ${fontFamily}`;
       ctx.textAlign = "center";
-      ctx.fillText(currentSegment, centerX + 10, centerY + size + 50);
+      ctx.fillText(currentSegment, centerX, centerY + size + 50);
     }
   };
 
   const clear = () => {
     const ctx = canvasContext;
-    ctx.clearRect(0, 0, 1000, 800);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   };
 
   return (
-    <div id="wheel">
-      <div id="wheel">
-        <canvas
-          id="canvas"
-          width={1000}
-          height={size * 2 + 120}
-          style={{
-            pointerEvents: isFinished && isOnlyOnce ? "none" : "auto",
-          }}
-        />
-      </div>
+    <div id="wheel" className="flex justify-center">
+      <canvas
+        id="canvas"
+        width={canvasWidth}
+        height={canvasHeight}
+        style={{
+          pointerEvents: isFinished && isOnlyOnce ? "none" : "auto",
+        }}
+      />
     </div>
   );
 }

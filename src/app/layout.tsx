@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { NextAuthProvider } from "@/server/provider/session-provider";
 import Providers from "@/server/provider/query-provider";
 import { AppProvider } from "@/server/provider/app-provider";
+import { Suspense } from "react";
 
 const robotoCondensed = Roboto_Condensed({
   variable: "--font-roboto-condensed",
@@ -25,12 +26,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${robotoCondensed.variable} antialiased`}>
-        <NextAuthProvider>
-          <Providers>
-            <AppProvider>{children}</AppProvider>
-          </Providers>
-          <Toaster />
-        </NextAuthProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <NextAuthProvider>
+            <Providers>
+              <AppProvider>{children}</AppProvider>
+            </Providers>
+            <Toaster />
+          </NextAuthProvider>
+        </Suspense>
       </body>
     </html>
   );
