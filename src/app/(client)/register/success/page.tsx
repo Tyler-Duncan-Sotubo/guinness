@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
 import { GXButton } from "@/components/ui/gx-button";
+import Link from "next/link";
 
 export default function RegistrationSuccessPage() {
   const searchParams = useSearchParams();
@@ -102,14 +103,25 @@ export default function RegistrationSuccessPage() {
           {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-3 mt-8">
             <GXButton
-              variant="primary"
+              variant="secondary"
               onClick={() => router.push("/catch-up")}
             >
               Catch Up With Past Events
             </GXButton>
 
-            <GXButton variant="secondary">Guinness FPL Join Now</GXButton>
-            <GXButton variant="primary" onClick={() => router.push("/")}>
+            <Link
+              href="https://fantasy.premierleague.com/leagues/auto-join/ehi1qz"
+              target="_blank"
+            >
+              <GXButton
+                variant="primary"
+                leftIcon="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763564201/Premier-League-Logo_b7h5j2.png"
+                leftIconAlt="Premier League Logo"
+              >
+                Guinness FPL Join Now
+              </GXButton>
+            </Link>
+            <GXButton variant="secondary" onClick={() => router.push("/")}>
               Back to homepage
             </GXButton>
           </div>
