@@ -101,15 +101,16 @@ export default function RegistrationSuccessPage() {
 
           {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-3 mt-8">
-            <GXButton variant="primary" onClick={() => router.push("/")}>
-              Back to homepage
+            <GXButton
+              variant="primary"
+              onClick={() => router.push("/catch-up")}
+            >
+              Catch Up With Past Events
             </GXButton>
 
-            <GXButton
-              variant="secondary"
-              onClick={() => router.push(`/register?eventId=${eventId}`)}
-            >
-              Register another person
+            <GXButton variant="secondary">Guinness FPL Join Now</GXButton>
+            <GXButton variant="primary" onClick={() => router.push("/")}>
+              Back to homepage
             </GXButton>
           </div>
         </div>

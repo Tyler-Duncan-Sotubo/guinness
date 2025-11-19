@@ -86,11 +86,11 @@ export default function HomePage() {
                   variant="secondary"
                   onClick={() => setShowRegularEvents(true)}
                 >
-                  Regular For Regular Events
+                  Register for Regular Events
                 </GXButton>
                 <GXButton
                   variant="secondary"
-                  onClick={() => router.push("/past-events")}
+                  onClick={() => router.push("/catch-up")}
                 >
                   Catch Up With Past Events
                 </GXButton>

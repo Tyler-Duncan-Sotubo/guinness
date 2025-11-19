@@ -182,7 +182,7 @@ export default function EventInfoPage() {
                 </p>
               )}
             </section>
-
+            {/* 
             <section className="space-y-3">
               <p className="text-xs uppercase tracking-[0.18em] text-neutral-400 text-center lg:text-left">
                 Get involved
@@ -196,7 +196,7 @@ export default function EventInfoPage() {
                   Match Quiz
                 </GXButton>
               </div>
-            </section>
+            </section> */}
 
             <div className="pt-4 border-t border-neutral-900 mt-6 sm:flex justify-center lg:justify-start hidden">
               <GXButton
