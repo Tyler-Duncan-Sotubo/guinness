@@ -1,6 +1,7 @@
-import { sendRegistrationEmail } from "@/lib/sendgrid";
 import { CreateRegistrationSchema } from "@/schema/registrations";
 import { registrationCreate } from "@/server/registrations";
+import { locationGetById } from "@/server/locations"; // adjust path if needed
+import { sendRegistrationEmail } from "@/lib/sendgrid";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -9,7 +10,6 @@ export async function POST(req: Request, ctx: Ctx) {
 
   const json = await req.json().catch(() => null);
   const parsed = CreateRegistrationSchema.safeParse(json);
-
   if (!parsed.success) {
     return Response.json({ error: "Invalid input" }, { status: 400 });
   }
@@ -35,9 +35,27 @@ export async function POST(req: Request, ctx: Ctx) {
     }
   }
 
-  // ⬇️ SEND CONFIRMATION EMAIL HERE
-  const { name, email } = parsed.data;
-  sendRegistrationEmail(name, email); // Don't await → prevents API delay
+  // result.item should contain { event, attendee, registration } from registrationCreate
+  const { event, attendee } = result.item;
+
+  // 🔍 Look up the location to get the city
+  let city: string | undefined;
+  try {
+    const locRes = await locationGetById(event.locationId);
+    if (locRes.ok) {
+      city = locRes?.item?.city;
+    }
+  } catch (e) {
+    console.error("Failed to load location for email", e);
+  }
+
+  // Fire-and-forget email (don't block the response)
+  void sendRegistrationEmail({
+    name: attendee.name,
+    email: attendee.email,
+    city,
+    date: event.startsAt,
+  });
 
   return Response.json(
     {
