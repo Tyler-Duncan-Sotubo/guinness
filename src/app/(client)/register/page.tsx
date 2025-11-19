@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-
 import { GXButton } from "@/components/ui/gx-button";
 import { ConsentModal } from "@/components/modal/consent-modal";
 import { useAppContext } from "@/server/provider/app-provider";
@@ -196,9 +195,18 @@ export default function RegistrationPage() {
 
   return (
     <MatchdayLayout>
-      <div className="grid md:grid-cols-2 gap-8 items-start">
+      <div className="grid md:grid-cols-3 gap-8 items-start">
+        <div className="pointer-events-none absolute inset-0 opacity-10">
+          <Image
+            src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+            alt="Guinness Matchday"
+            fill
+            className="object-contain object-center"
+            priority
+          />
+        </div>
         {/* LEFT: mobile event card + registration form */}
-        <section className="space-y-4">
+        <section className="space-y-4 col-span-2">
           {/* Mobile-only event info card */}
           <div className="md:hidden">
             {isEventLoading && (
@@ -387,10 +395,10 @@ export default function RegistrationPage() {
         <aside className="hidden md:block bg-neutral-950/60 p-0 overflow-hidden">
           <div className="relative w-full h-full min-h-[630px] flex items-center justify-center">
             <Image
-              src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763038071/Matchday_KV44_r60zv2.webp"
+              src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763472212/Official_Beer_of_the_PL_ek8e9l.webp"
               alt="Guinness Match Day"
               fill
-              className="object-contain"
+              className="object-cover"
             />
           </div>
         </aside>

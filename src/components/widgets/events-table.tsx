@@ -9,6 +9,7 @@ import { DeleteButton } from "@/components/ui/delete-button";
 import EventModal from "@/components/modal/event-modal";
 import type { EventItem } from "@/types/events";
 import { FaEdit } from "react-icons/fa";
+import DownloadRegistrationsButton from "../ui/download-reg-button";
 
 const columns = (onEdit: (evt: EventItem) => void): ColumnDef<EventItem>[] => [
   {
@@ -56,11 +57,12 @@ const columns = (onEdit: (evt: EventItem) => void): ColumnDef<EventItem>[] => [
     cell: ({ row }) => {
       const evt = row.original;
       return (
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-10">
           <Button variant="link" className="p-0" onClick={() => onEdit(evt)}>
             <FaEdit /> Edit
           </Button>
           <DeleteButton itemId={evt.id} type="event" showText />
+          {evt.isEpic ? <DownloadRegistrationsButton eventId={evt.id} /> : null}
         </div>
       );
     },

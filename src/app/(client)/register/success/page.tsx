@@ -1,77 +1,20 @@
-// app/registration-success/page.tsx (or whatever your route is)
 "use client";
 
 import { useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import confetti from "canvas-confetti";
 import { GXButton } from "@/components/ui/gx-button";
-import { MatchdayLayout } from "@/components/layout/matchday-layout";
-
-type EventWithLocation = {
-  id: string;
-  locationId: string;
-  title: string;
-  startsAt: string;
-  endsAt: string;
-  isEpic: boolean;
-  status: "draft" | "published" | "archived";
-  city?: string | null;
-  venue?: string | null;
-  description?: string;
-};
-
-async function fetchEventWithLocation(
-  eventId: string
-): Promise<EventWithLocation> {
-  const res = await fetch(`/api/events/${eventId}`);
-  if (!res.ok) {
-    throw new Error("Failed to load event");
-  }
-
-  const json: { ok: boolean; item?: EventWithLocation; error?: string } =
-    await res.json();
-
-  if (!json.ok || !json.item) {
-    throw new Error(json.error || "Event not found");
-  }
-
-  return json.item;
-}
 
 export default function RegistrationSuccessPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const eventId = searchParams.get("eventId");
 
-  const {
-    data: event,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["event-success", eventId],
-    queryFn: () => fetchEventWithLocation(eventId as string),
-    enabled: !!eventId,
-  });
-
-  const friendlyError =
-    isError && error instanceof Error
-      ? error.message
-      : isError
-      ? "Failed to load event details."
-      : null;
-
-  // 🔥 Fire confetti once when success state is ready
+  // Fire confetti once
   const hasFiredConfettiRef = useRef(false);
 
   useEffect(() => {
-    if (
-      !hasFiredConfettiRef.current &&
-      !isLoading &&
-      !friendlyError &&
-      eventId
-    ) {
+    if (!hasFiredConfettiRef.current && eventId) {
       hasFiredConfettiRef.current = true;
 
       confetti({
@@ -81,13 +24,21 @@ export default function RegistrationSuccessPage() {
         angle: 90,
       });
     }
-  }, [isLoading, friendlyError, eventId]);
+  }, [eventId]);
 
-  // Missing eventId entirely
+  // If no eventId
   if (!eventId) {
     return (
-      <MatchdayLayout>
-        <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+      <div
+        className="
+          relative min-h-screen flex flex-col text-white overflow-hidden
+          bg-[url('https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763544510/WhatsApp_Image_2025-11-17_at_22.23.55_6e9885a3_ga769j.jpg')]
+          bg-cover bg-center
+        "
+      >
+        <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col items-center justify-center py-12 text-center space-y-4">
           <p className="text-sm text-red-400">
             Missing <code>eventId</code>. Please use a valid registration link.
           </p>
@@ -95,86 +46,74 @@ export default function RegistrationSuccessPage() {
             Back to homepage
           </GXButton>
         </div>
-      </MatchdayLayout>
+      </div>
     );
   }
 
   return (
-    <MatchdayLayout>
-      <div className="flex flex-col items-center text-center space-y-6 pt-4">
-        {/* Loading / error states */}
-        {isLoading && (
-          <p className="text-xs text-neutral-400">Loading your event…</p>
-        )}
+    <div
+      className="
+        relative min-h-screen flex flex-col text-white overflow-hidden
+        bg-[url('https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763544510/WhatsApp_Image_2025-11-17_at_22.23.55_6e9885a3_ga769j.jpg')]
+        bg-cover bg-center
+      "
+    >
+      <div className="absolute inset-0 bg-black/50 pointer-events-none" />
 
-        {friendlyError && (
-          <>
-            <p className="text-sm text-red-400">{friendlyError}</p>
+      <div className="relative z-10 px-4 py-8 flex-1 flex items-end justify-center">
+        <div className="flex flex-col items-center text-center space-y-6 pt-4">
+          {/* SUCCESS */}
+          <h1 className="text-3xl font-semibold">You’re all set!</h1>
+          <p className="text-white max-w-md text-md">
+            Your spot has been secured. Get ready for an unforgettable Guinness
+            Match Day experience.
+          </p>
+
+          {/* EVENT TITLE (Static, edit as needed) */}
+          <div className="mt-4 w-full max-w-md space-y-2">
+            <p className="text-3xl font-bold uppercase tracking-widest mb-1">
+              EPIC LIVE FOOTBALL EXPERIENCE
+            </p>
+
+            {/* DATE CARD */}
+            <section className="w-full mx-auto mt-8 flex justify-center">
+              <div className="flex items-center bg-black border-2 border-amber-400 rounded-lg px-4 py-2 text-white h-18">
+                {/* SUN (vertical) */}
+                <span className="text-xl font-semibold rotate-90 tracking-wide text-[#40bcbc] leading-none">
+                  SUN
+                </span>
+
+                {/* 30 */}
+                <span className="text-5xl font-bold leading-none mx-0">30</span>
+
+                {/* NOV / 2025 */}
+                <div className="flex flex-col justify-center leading-none mx-1">
+                  <span className="text-xl font-semibold text-amber-400 leading-none">
+                    NOV
+                  </span>
+                  <span className="text-xl font-semibold text-amber-400 leading-none">
+                    2025
+                  </span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* BUTTONS */}
+          <div className="flex flex-col sm:flex-row gap-3 mt-8">
             <GXButton variant="primary" onClick={() => router.push("/")}>
               Back to homepage
             </GXButton>
-          </>
-        )}
 
-        {!isLoading && !friendlyError && (
-          <>
-            {/* Checkmark */}
-            <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
-              <svg
-                className="w-10 h-10 text-emerald-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-
-            <h1 className="text-3xl font-semibold">You’re all set!</h1>
-            <p className="text-neutral-300 max-w-md text-sm">
-              Your spot has been secured. Get ready for an unforgettable
-              Guinness Match Day experience.
-            </p>
-
-            {/* Event details box */}
-            <div className="mt-4 w-full max-w-md bg-neutral-950/60 border border-neutral-800 rounded-3xl p-6 space-y-2">
-              <p className="text-xs uppercase tracking-[0.18em] text-neutral-400 mb-1">
-                Event Details
-              </p>
-
-              <p className="text-lg font-semibold">
-                {event?.title ?? `Event ID: ${eventId}`}
-              </p>
-
-              {(event?.city || event?.venue) && (
-                <p className="text-sm text-neutral-400">
-                  {event.city}
-                  {event.venue ? ` · ${event.venue}` : ""}
-                </p>
-              )}
-            </div>
-
-            {/* CTA buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-8">
-              <GXButton
-                variant="primary"
-                onClick={() => router.push("/")}
-                className="tracking-[0.22em]"
-              >
-                Back to homepage
-              </GXButton>
-
-              <GXButton
-                variant="secondary"
-                onClick={() => router.push(`/register?eventId=${eventId}`)}
-              >
-                Register another person
-              </GXButton>
-            </div>
-          </>
-        )}
+            <GXButton
+              variant="secondary"
+              onClick={() => router.push(`/register?eventId=${eventId}`)}
+            >
+              Register another person
+            </GXButton>
+          </div>
+        </div>
       </div>
-    </MatchdayLayout>
+    </div>
   );
 }

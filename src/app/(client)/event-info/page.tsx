@@ -138,8 +138,8 @@ export default function EventInfoPage() {
 
   return (
     <MatchdayLayout>
-      <div className="mt-8 md:mt-10 px-4 md:px-0">
-        <div className="grid gap-8 lg:gap-12 lg:grid-cols-2 items-start">
+      <div className="mt-8 md:mt-32 px-4 md:px-0">
+        <div className="w-full max-w-2xl mx-auto">
           {/* LEFT: Event info */}
           <div className="space-y-8">
             <header className="space-y-3 text-center lg:text-left">
@@ -210,7 +210,7 @@ export default function EventInfoPage() {
           </div>
 
           {/* RIGHT: Spinner */}
-          <div className="space-y-4 lg:space-y-6">
+          {/* <div className="space-y-4 lg:space-y-6">
             <div className="flex justify-center lg:justify-center items-center">
               <GXButton
                 variant="primary"
@@ -239,7 +239,7 @@ export default function EventInfoPage() {
               Try your luck with the Spin &amp; Win wheel to earn points and
               rewards!
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
 

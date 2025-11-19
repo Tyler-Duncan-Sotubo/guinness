@@ -13,7 +13,7 @@ export function GXButton({
   ...props
 }: GXButtonProps) {
   const base =
-    "inline-flex items-center cursor-pointer justify-center px-6 py-3 rounded-full font-semibold uppercase tracking-[0.2em] text-xs md:text-sm transition-colors";
+    "inline-flex items-center cursor-pointer justify-center px-6 py-3 rounded-full font-semibold uppercase tracking-[0.2em] text-xs transition-colors";
 
   const variants = {
     primary: "bg-amber-400 text-black hover:bg-amber-300",

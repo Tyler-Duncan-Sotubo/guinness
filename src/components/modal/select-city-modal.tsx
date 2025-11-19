@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { GXButton } from "@/components/ui/gx-button";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 
 type EventItem = {
   id: string;
@@ -36,6 +37,8 @@ type SelectCityModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (event: DisplayEvent) => void;
+  showEpic?: boolean;
+  showRegular?: boolean;
 };
 
 async function fetchEventsWithLocations(): Promise<DisplayEvent[]> {
@@ -73,6 +76,8 @@ export function SelectCityModal({
   open,
   onOpenChange,
   onSelect,
+  showEpic = true,
+  showRegular = true,
 }: SelectCityModalProps) {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
@@ -84,14 +89,23 @@ export function SelectCityModal({
   } = useQuery({
     queryKey: ["events-with-locations"],
     queryFn: fetchEventsWithLocations,
-    enabled: open, // only fetch when modal is open
+    enabled: open,
   });
 
   const { eventsByCity, cityOrder } = useMemo(() => {
     const byCity: Record<string, DisplayEvent[]> = {};
     const items = events ?? [];
 
-    for (const ev of items) {
+    // 🔍 Filter by epic / regular based on props
+    const filtered = items.filter((ev) => {
+      if (showEpic && showRegular) return true;
+      if (showEpic && !showRegular) return ev.isEpic;
+      if (!showEpic && showRegular) return !ev.isEpic;
+      // if both false, show nothing:
+      return false;
+    });
+
+    for (const ev of filtered) {
       const key = ev.city || "Other";
       if (!byCity[key]) byCity[key] = [];
       byCity[key].push(ev);
@@ -108,9 +122,8 @@ export function SelectCityModal({
 
     const cities = Object.keys(byCity).sort((a, b) => a.localeCompare(b));
     return { eventsByCity: byCity, cityOrder: cities };
-  }, [events]);
+  }, [events, showEpic, showRegular]);
 
-  // Ensure selectedCity is set when data loads / changes
   useEffect(() => {
     if (!selectedCity && cityOrder.length > 0) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -136,37 +149,47 @@ export function SelectCityModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md bg-black text-white border-neutral-800">
+        {/* Background image */}
+        <div className="pointer-events-none absolute inset-0 opacity-20">
+          <Image
+            src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+            alt="Guinness Matchday"
+            fill
+            className="object-contain object-center"
+            priority
+          />
+        </div>
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold leading-tight uppercase">
-            Select your city &amp; match day
+            {showEpic
+              ? "Select Your EPIC City & Match Day"
+              : "Select Your City & Match Day"}
           </DialogTitle>
+
           <DialogDescription className="text-sm text-neutral-300">
-            Start by choosing your city, then pick the Match Day event you want
-            to attend.
+            {showEpic
+              ? "Choose your eligible EPIC city, then pick the exclusive Match Day event you want to attend."
+              : "Start by choosing your city, then pick the Match Day event you want to attend."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 space-y-4">
-          {/* Loading */}
           {isLoading && (
             <p className="text-xs text-neutral-400">Loading events…</p>
           )}
 
-          {/* Error */}
           {friendlyError && (
             <p className="text-xs text-red-400">
               {friendlyError} If this keeps happening, please refresh the page.
             </p>
           )}
 
-          {/* Empty state */}
           {!isLoading && !friendlyError && cityOrder.length === 0 && (
             <p className="text-xs text-neutral-400">
               No events are currently available. Please check back later.
             </p>
           )}
 
-          {/* Content */}
           {!isLoading && !friendlyError && cityOrder.length > 0 && (
             <>
               {/* Cities row */}
