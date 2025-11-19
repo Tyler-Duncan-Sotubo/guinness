@@ -106,8 +106,8 @@ export default function HomePage() {
           onComplete={() => {
             setShowConsent(false);
           }}
-          // showCloseButton={false}
-          // dismissible={false}
+          showCloseButton={false}
+          dismissible={false}
         />
 
         {/* City Selection Modal */}
