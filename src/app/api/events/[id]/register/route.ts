@@ -2,6 +2,7 @@ import { CreateRegistrationSchema } from "@/schema/registrations";
 import { registrationCreate } from "@/server/registrations";
 import { locationGetById } from "@/server/locations"; // adjust path if needed
 import { sendRegistrationEmail } from "@/lib/sendgrid";
+import { getFirstName } from "@/utils/name-utils";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -49,9 +50,8 @@ export async function POST(req: Request, ctx: Ctx) {
     console.error("Failed to load location for email", e);
   }
 
-  // Fire-and-forget email (don't block the response)
   void sendRegistrationEmail({
-    name: attendee.name,
+    name: getFirstName(attendee.name), // "Bella" from "Bella Shmurda"
     email: attendee.email,
     city,
     date: event.startsAt,

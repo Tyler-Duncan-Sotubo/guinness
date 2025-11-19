@@ -199,7 +199,7 @@ export function SelectCityModal({
                     key={city}
                     type="button"
                     variant={city === selectedCity ? "primary" : "secondary"}
-                    className="px-4 py-2 text-[0.65rem]"
+                    className="px-4 py-2 text-[0.65rem] font-bold"
                     onClick={() => setSelectedCity(city)}
                   >
                     {city}
@@ -242,7 +242,7 @@ export function SelectCityModal({
                           </span>
                         </div>
 
-                        <div className="text-[0.7rem] text-neutral-400 space-y-1">
+                        <div className="text-[0.7rem] text-white space-y-1 font-bold">
                           <p>
                             {dateLabel}
                             {event.venue ? ` · ${event.venue}` : null}
