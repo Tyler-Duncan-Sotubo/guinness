@@ -1,3 +1,4 @@
+import { sendRegistrationEmail } from "@/lib/sendgrid";
 import { CreateRegistrationSchema } from "@/schema/registrations";
 import { registrationCreate } from "@/server/registrations";
 
@@ -8,6 +9,7 @@ export async function POST(req: Request, ctx: Ctx) {
 
   const json = await req.json().catch(() => null);
   const parsed = CreateRegistrationSchema.safeParse(json);
+
   if (!parsed.success) {
     return Response.json({ error: "Invalid input" }, { status: 400 });
   }
@@ -32,6 +34,10 @@ export async function POST(req: Request, ctx: Ctx) {
         return Response.json({ error: result.error }, { status: 400 });
     }
   }
+
+  // ⬇️ SEND CONFIRMATION EMAIL HERE
+  const { name, email } = parsed.data;
+  sendRegistrationEmail(name, email); // Don't await → prevents API delay
 
   return Response.json(
     {

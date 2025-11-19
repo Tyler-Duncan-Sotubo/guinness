@@ -26,17 +26,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={inputType}
           className={cn(
-            `flex h-12 w-full rounded-md border border-black/40 bg-transparent 
-     px-3 py-2 
-     text-[16px] leading-[1.2] 
-     placeholder:text-[16px]
-     shadow-sm transition-colors 
-     placeholder:text-muted-foreground 
-     focus-visible:outline-none focus-visible:ring-1 
-     disabled:cursor-not-allowed disabled:opacity-50
-     md:text-base md:placeholder:text-base`,
+            "flex h-12 w-full rounded-md border border-black/40 bg-transparent",
+            "px-3 py-2 shadow-sm transition-colors placeholder:text-muted-foreground",
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            "text-[16px] md:text-sm leading-normal", // ← the fix
             leftIcon || isPassword ? "pl-10" : "pl-5",
             rightIcon ? "pr-10" : "",
+            "appearance-none", // avoid odd platform styles that affect sizing
             className
           )}
           ref={ref}

@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { GXButton } from "../ui/gx-button";
 import { saveAgeGate, saveTerms } from "@/lib/consent";

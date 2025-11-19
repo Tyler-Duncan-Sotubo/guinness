@@ -151,9 +151,6 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-@layer base {
   /* iOS + Chrome iOS both use WebKit */
   @supports (-webkit-touch-callout: none) {
     input,
