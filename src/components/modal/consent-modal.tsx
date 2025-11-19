@@ -11,6 +11,7 @@ import {
 import { GXButton } from "../ui/gx-button";
 import { saveAgeGate, saveTerms } from "@/lib/consent";
 import { useAppContext } from "@/server/provider/app-provider";
+import Image from "next/image";
 
 type ConsentResult = {
   ageGatePassed: boolean;
@@ -81,18 +82,20 @@ export function ConsentModal({
         }}
       >
         <DialogHeader className="relative">
-          <DialogTitle className="text-2xl  font-semibold leading-tight uppercase">
-            Age Verification
-          </DialogTitle>
-
-          <DialogDescription className="text-sm text-neutral-300 mt-1">
-            Guinness Match Day is for adults only. Please confirm your age and
-            acceptance of our terms &amp; conditions to continue.
-          </DialogDescription>
+          <DialogTitle className="text-2xl font-semibold leading-tight uppercase"></DialogTitle>
         </DialogHeader>
 
         {/* ...rest of your existing JSX (age gate, checkbox, button)... */}
-        <section className="mt-6 space-y-8">
+        <section className="space-y-4 text-center">
+          <div className="relative w-52 h-52 mx-auto">
+            <Image
+              src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+              alt="Guinness Matchday"
+              fill
+              className="object-center"
+              priority
+            />
+          </div>
           {/* Age Gate */}
           <div>
             <h2 className="text-xs md:text-sm font-semibold tracking-[0.18em] uppercase text-neutral-300 mb-3">
@@ -104,7 +107,7 @@ export function ConsentModal({
               events.
             </p>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 justify-center">
               <GXButton
                 type="button"
                 onClick={handleOver18}
