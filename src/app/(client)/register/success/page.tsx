@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import confetti from "canvas-confetti";
 import { GXButton } from "@/components/ui/gx-button";
 import Link from "next/link";
+import { MatchdayLayout } from "@/components/layout/matchday-layout";
 
 export default function RegistrationSuccessPage() {
   const searchParams = useSearchParams();
@@ -52,17 +53,54 @@ export default function RegistrationSuccessPage() {
   }
 
   return (
-    <div
-      className="
-        relative min-h-screen flex flex-col text-white overflow-hidden
-        bg-[url('https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763544510/WhatsApp_Image_2025-11-17_at_22.23.55_6e9885a3_ga769j.jpg')]
-        bg-cover bg-center
-      "
-    >
+    <MatchdayLayout>
       <div className="absolute inset-0 bg-black/50 pointer-events-none" />
 
       <div className="relative z-10 px-4 py-8 flex-1 flex items-end justify-center">
         <div className="flex flex-col items-center text-center space-y-6 pt-4">
+          <svg className="w-20 h-20 mb-4" viewBox="0 0 52 52">
+            <circle
+              className="stroke-[#40bcbc]"
+              cx="26"
+              cy="26"
+              r="25"
+              fill="none"
+              strokeWidth="3"
+              strokeLinecap="round"
+              style={{
+                strokeDasharray: "157",
+                strokeDashoffset: "157",
+                animation: "circle-animation 0.6s ease-out forwards",
+              }}
+            ></circle>
+
+            <path
+              className="stroke-[#40bcbc]"
+              fill="none"
+              strokeWidth="3"
+              strokeLinecap="round"
+              d="M16 27 L23 34 L36 20"
+              style={{
+                strokeDasharray: "40",
+                strokeDashoffset: "40",
+                animation: "check-animation 0.3s ease-out 0.6s forwards",
+              }}
+            />
+          </svg>
+
+          <style jsx>{`
+            @keyframes circle-animation {
+              to {
+                stroke-dashoffset: 0;
+              }
+            }
+            @keyframes check-animation {
+              to {
+                stroke-dashoffset: 0;
+              }
+            }
+          `}</style>
+
           {/* SUCCESS */}
           <h1 className="text-3xl font-semibold">You’re all set!</h1>
           <p className="text-white max-w-md text-md">
@@ -127,6 +165,6 @@ export default function RegistrationSuccessPage() {
           </div>
         </div>
       </div>
-    </div>
+    </MatchdayLayout>
   );
 }
