@@ -11,6 +11,7 @@ import { GXButton } from "../ui/gx-button";
 import { saveAgeGate, saveTerms } from "@/lib/consent";
 import { useAppContext } from "@/server/provider/app-provider";
 import Image from "next/image";
+import Link from "next/link";
 
 type ConsentResult = {
   ageGatePassed: boolean;
@@ -166,9 +167,13 @@ export function ConsentModal({
                 />
                 <span>
                   I confirm that I am of legal drinking age and I accept the{" "}
-                  <span className="underline underline-offset-2 decoration-neutral-500">
+                  <Link
+                    href="https://guinness-nigeria.com/en/policies.html"
+                    className="underline underline-offset-2 decoration-neutral-500"
+                    target="_blank"
+                  >
                     terms &amp; conditions
-                  </span>{" "}
+                  </Link>{" "}
                   for Guinness Match Day events.
                 </span>
               </label>

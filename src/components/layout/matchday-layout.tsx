@@ -1,8 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-// import Header from "@/components/navigation/header";
-import { GXFooter } from "@/components/navigation/gx-footer";
 
 type MatchdayLayoutProps = {
   children: ReactNode;
@@ -31,8 +29,6 @@ export function MatchdayLayout({ children }: MatchdayLayoutProps) {
       <main className="relative z-10 flex-1">
         <div className="max-w-6xl mx-auto px-4 mt-20">{children}</div>
       </main>
-
-      <GXFooter />
     </div>
   );
 }
