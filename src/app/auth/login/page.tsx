@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
 import FormError from "@/components/ui/form-error";
-import DividerWithText from "@/components/ui/divider-with-text";
 
 const LoginSchema = z.object({
   email: z.email("Invalid email"),
@@ -100,17 +99,6 @@ export default function LoginPage() {
 
           <Button type="submit" className="w-full">
             Sign in
-          </Button>
-
-          <DividerWithText text="OR" />
-
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => router.push("/auth/register")}
-            type="button"
-          >
-            Create an account
           </Button>
         </form>
       </Form>
