@@ -90,7 +90,7 @@ export function SelectCityModal({
     }
   }, [cityOrder, selectedCity]);
 
-  const handleSelect = (event: DisplayEvent) => {
+  const handleSelect = (event: EventItem) => {
     onSelect(event);
     onOpenChange(false);
   };
