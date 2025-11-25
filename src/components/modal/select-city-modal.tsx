@@ -11,65 +11,24 @@ import {
 import { GXButton } from "@/components/ui/gx-button";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-
-type EventItem = {
-  id: string;
-  locationId: string;
-  title: string;
-  startsAt: string;
-  endsAt: string;
-  isEpic: boolean;
-  status: "draft" | "published" | "archived";
-};
-
-type LocationItem = {
-  id: string;
-  city: string;
-  venue: string | null;
-};
-
-type DisplayEvent = EventItem & {
-  city: string;
-  venue: string | null;
-};
+import type { EventItem } from "@/types/events";
 
 type SelectCityModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (event: DisplayEvent) => void;
+  onSelect: (event: EventItem) => void;
   showEpic?: boolean;
   showRegular?: boolean;
 };
 
-async function fetchEventsWithLocations(): Promise<DisplayEvent[]> {
-  const [eventsRes, locationsRes] = await Promise.all([
-    fetch("/api/events"),
-    fetch("/api/locations"),
-  ]);
-
+async function fetchEvents(): Promise<EventItem[]> {
+  const eventsRes = await fetch("/api/events");
   if (!eventsRes.ok) throw new Error("Failed to load events");
-  if (!locationsRes.ok) throw new Error("Failed to load locations");
 
-  const eventsJson: { items: EventItem[] } = await eventsRes.json();
-  const locationsJson: { items: LocationItem[] } = await locationsRes.json();
+  const eventsJson: { items?: EventItem[] } = await eventsRes.json();
+  const items = eventsJson.items ?? [];
 
-  const locationMap = new Map<string, LocationItem>();
-  for (const loc of locationsJson.items) {
-    locationMap.set(loc.id, loc);
-  }
-
-  const published = eventsJson.items.filter((e) => e.status === "published");
-
-  const withLocation: DisplayEvent[] = published.map((e) => {
-    const loc = locationMap.get(e.locationId);
-    return {
-      ...e,
-      city: loc?.city ?? "Unknown city",
-      venue: loc?.venue ?? null,
-    };
-  });
-
-  return withLocation;
+  return items.filter((e) => e.status === "published");
 }
 
 export function SelectCityModal({
@@ -86,14 +45,14 @@ export function SelectCityModal({
     isLoading,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<EventItem[]>({
     queryKey: ["events-with-locations"],
-    queryFn: fetchEventsWithLocations,
+    queryFn: fetchEvents,
     enabled: open,
   });
 
   const { eventsByCity, cityOrder } = useMemo(() => {
-    const byCity: Record<string, DisplayEvent[]> = {};
+    const byCity: Record<string, EventItem[]> = {};
     const items = events ?? [];
 
     // 🔍 Filter by epic / regular based on props

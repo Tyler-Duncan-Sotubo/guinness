@@ -1,20 +1,20 @@
-// Layout.tsx
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Sidebar from "@/components/navigation/Sidebar";
 import Navbar from "@/components/navigation/Navbar";
 import ScrollToTop from "@/components/navigation/ScrollToTop";
 
-const SIDEBAR_EXPANDED_W = 240; // px (w-64)
-const SIDEBAR_COLLAPSED_W = 64; // px (w-16)
+const SIDEBAR_EXPANDED_W = 240;
+const SIDEBAR_COLLAPSED_W = 64;
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden w-">
-      {/* Sidebar (desktop only) */}
+    <div className="relative min-h-screen bg-gray-50 overflow-x-hidden flex">
+      {/* Sidebar */}
       <div
         className={`hidden md:block shrink-0 ${
           sidebarCollapsed ? "w-16" : "w-60"
@@ -27,20 +27,31 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       {/* Main column */}
-      <div className="flex-1 min-w-0 bg-white">
-        {/* Navbar now reacts to sidebarCollapsed and aligns itself (fixed at md+, sticky on mobile) */}
+      <div className="relative flex-1 min-w-0 bg-white/80">
         <Navbar
           desktopLeftPx={
             sidebarCollapsed ? SIDEBAR_COLLAPSED_W : SIDEBAR_EXPANDED_W
           }
         />
 
-        <main className="pt-2 md:pt-8 py-4">
-          {/* pt-16 offsets fixed/sticky navbar height */}
+        <main className="relative pt-2 md:pt-8 py-4 min-h-[81vh]">
           <ScrollToTop />
-          <div className="min-w-0 transition-[width,max-width] duration-200 pt-4 pb-10 min-h-[81vh] ">
-            {children}
+
+          {/* 🔥 LOGO ONLY BEHIND MAIN CONTENT */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-0">
+            <div className="relative w-[300px] h-[300px] md:w-[450px] md:h-[450px] opacity-5">
+              <Image
+                src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+                alt="Guinness Matchday"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
+
+          {/* Content above the logo */}
+          <div className="relative z-10 min-w-0 pt-4 pb-10">{children}</div>
         </main>
       </div>
     </div>

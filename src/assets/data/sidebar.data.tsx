@@ -1,7 +1,6 @@
 // data/sidebar.data.tsx
 import React, { JSX } from "react";
-import { FaGift, FaFileAlt } from "react-icons/fa";
-import { MdDashboard } from "react-icons/md";
+import { LayoutDashboard, MapPin, CalendarDays } from "lucide-react";
 
 type BaseItem = {
   title: string;
@@ -25,17 +24,17 @@ export type MenuItem = BaseItem | DividerItem;
 export const main: readonly MenuItem[] = [
   {
     title: "Dashboard",
-    icon: <MdDashboard size={20} />,
+    icon: <LayoutDashboard size={20} />,
     link: "/dashboard",
   },
   {
     title: "Locations",
-    icon: <FaGift size={20} />,
+    icon: <MapPin size={20} />,
     link: "/dashboard/locations",
   },
   {
     title: "Events",
-    icon: <FaFileAlt size={20} />,
+    icon: <CalendarDays size={20} />,
     link: "/dashboard/events",
   },
 ] as const;

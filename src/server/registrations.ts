@@ -7,6 +7,7 @@ import { registrations } from "@/drizzle/schema/registrations";
 import { consents } from "@/drizzle/schema/consents";
 import { CreateRegistrationInput } from "@/schema/registrations";
 import { eventGetById } from "@/server/events";
+import { events, locations } from "@/drizzle/schema";
 
 type Meta = {
   ip?: string;
@@ -192,10 +193,12 @@ export type RegistrationWithAttendee = {
   phone: string | null;
 };
 
-export async function registrationListByEvent(
-  eventId: string
-): Promise<
-  { ok: true; items: RegistrationWithAttendee[] } | { ok: false; error: string }
+export async function registrationListByEvent(eventId: string): Promise<
+  | {
+      ok: true;
+      items: (RegistrationWithAttendee & { eventCity: string | null })[];
+    }
+  | { ok: false; error: string }
 > {
   // ensure event exists to give a nice 404 upstream
   const eventResult = await eventGetById(eventId);
@@ -213,9 +216,13 @@ export async function registrationListByEvent(
       name: attendees.name,
       email: attendees.email,
       phone: attendees.phone,
+      // NEW:
+      eventCity: locations.city,
     })
     .from(registrations)
     .innerJoin(attendees, eq(registrations.attendeeId, attendees.id))
+    .innerJoin(events, eq(registrations.eventId, events.id))
+    .leftJoin(locations, eq(events.locationId, locations.id))
     .where(eq(registrations.eventId, eventId))
     .orderBy(asc(registrations.createdAt), asc(attendees.name));
 

@@ -8,17 +8,27 @@ import { locations } from "@/drizzle/schema/locations";
 import { CreateEventInput, UpdateEventInput } from "@/schema/events";
 
 export async function eventList(locationId?: string) {
-  if (locationId) {
-    return db
-      .select()
-      .from(events)
-      .where(eq(events.locationId, locationId))
-      .orderBy(asc(events.startsAt), asc(events.title)); // lexicographic; OK if ISO
-  }
-  return db
-    .select()
+  const query = db
+    .select({
+      id: events.id,
+      title: events.title,
+      startsAt: events.startsAt,
+      endsAt: events.endsAt,
+      isEpic: events.isEpic,
+      status: events.status,
+      locationId: events.locationId,
+      city: locations.city,
+      venue: locations.venue,
+    })
     .from(events)
+    .leftJoin(locations, eq(events.locationId, locations.id))
     .orderBy(asc(events.startsAt), asc(events.title));
+
+  if (locationId) {
+    query.where(eq(events.locationId, locationId));
+  }
+
+  return query;
 }
 
 export async function eventGetById(id: string) {

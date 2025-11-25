@@ -22,13 +22,12 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
-const SIDEBAR_EXPANDED_W = 240; // px
-const SIDEBAR_COLLAPSED_W = 64; // px
+const SIDEBAR_EXPANDED_W = 240;
+const SIDEBAR_COLLAPSED_W = 64;
 
 export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
 
-  // ---- FIX: exact match by default, optional subpath support
   const normalize = (p?: string) =>
     (p ?? "").split("?")[0].replace(/\/+$/g, "") || "/";
 
@@ -38,7 +37,6 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     const b = normalize(href);
     return includeSubpaths ? a === b || a.startsWith(b + "/") : a === b;
   };
-  // ----
 
   return (
     <TooltipProvider>
@@ -47,26 +45,26 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           width: isCollapsed ? SIDEBAR_COLLAPSED_W : SIDEBAR_EXPANDED_W,
         }}
         transition={{ duration: 0.2 }}
-        className="md:fixed hidden left-0 top-0 h-screen bg-monzo-background text-monzo-textPrimary border-r p-2 md:flex flex-col justify-between overflow-y-auto"
+        className="
+          md:fixed hidden left-0 top-0 h-screen 
+          bg-black text-amber-100 border-r border-amber-500/30
+          p-2 md:flex flex-col justify-between overflow-y-auto
+        "
       >
         <div>
           {/* Logo */}
           <div className={`my-5 ${isCollapsed ? "px-1" : "px-3"}`}>
             <ApplicationLogo
               className={
-                isCollapsed ? "h-10 w-8 flex justify-center" : "h-14 w-24"
+                isCollapsed ? "h-12 w-10 flex justify-center" : "h-26 w-36"
               }
-              src={
-                isCollapsed
-                  ? "https://res.cloudinary.com/dw1ltt9iz/image/upload/v1757584746/logo-icon_ig26ee.png"
-                  : "https://res.cloudinary.com/dw1ltt9iz/image/upload/v1757584747/logo-white_zveolj.png"
-              }
-              alt="Company Logo"
+              src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+              alt="Matchday Logo"
               link="/dashboard"
             />
           </div>
 
-          {/* Navigation (flat) */}
+          {/* Navigation */}
           <nav className="space-y-1">
             {main.map((item) => (
               <div key={item.title}>
@@ -74,14 +72,14 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                   <TooltipTrigger asChild>
                     <Link
                       href={item.link || "#"}
-                      className={`flex items-center gap-2 px-3 py-2 rounded transition-colors ${
-                        // exact by default; pass true to keep parent active on children
-                        isActive(
-                          item.link /*, item.keepActiveOnChildren === true */
-                        )
-                          ? "text-monzo-green font-semibold"
-                          : "hover:bg-monzo-brand text-monzo-text-primary"
-                      }`}
+                      className={`
+                        flex items-center gap-2 px-3 py-2 rounded transition-colors 
+                        ${
+                          isActive(item.link)
+                            ? "text-amber-400 bg-amber-500/10 font-semibold"
+                            : "text-amber-100 hover:bg-amber-500/20"
+                        }
+                      `}
                     >
                       {item.icon}
                       {!isCollapsed && (
@@ -91,6 +89,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                       )}
                     </Link>
                   </TooltipTrigger>
+
                   {isCollapsed && (
                     <TooltipContent side="right">{item.title}</TooltipContent>
                   )}
@@ -104,7 +103,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         <div className="flex justify-end px-2 pb-2">
           <button
             onClick={onToggle}
-            className="p-2 rounded hover:bg-monzo-brand"
+            className="p-2 rounded hover:bg-amber-500/20 text-amber-100"
           >
             {isCollapsed ? (
               <TbLayoutSidebarRightCollapseFilled size={20} />

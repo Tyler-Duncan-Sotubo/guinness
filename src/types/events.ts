@@ -8,4 +8,6 @@ export interface EventItem {
   endsAt: string; // ISO string (now required)
   isEpic: boolean;
   status: EventStatus;
+  city: string;
+  venue: string | null;
 }

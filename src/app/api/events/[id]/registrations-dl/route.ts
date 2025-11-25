@@ -25,11 +25,7 @@ export async function POST(req: Request, ctx: Ctx) {
     { field: "name", title: "Name" },
     { field: "email", title: "Email" },
     { field: "phone", title: "Phone" },
-    { field: "registrationId", title: "Registration ID" },
     { field: "createdAt", title: "Created At" },
-    { field: "status", title: "Status" },
-    { field: "source", title: "Source" },
-    { field: "attendeeId", title: "Attendee ID" },
   ];
 
   const rows = items.map((r) => ({
@@ -38,9 +34,22 @@ export async function POST(req: Request, ctx: Ctx) {
     createdAt: r.createdAt ? r.createdAt.toISOString() : "",
   }));
 
+  // --- NEW: build a safe city slug for the filename ---
+  const city = items[0]?.eventCity ?? "";
+  const citySlug = city
+    ? city
+        .toLowerCase()
+        .normalize("NFKD") // strip accents
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/gi, "-")
+        .replace(/^-+|-+$/g, "")
+    : "unknown-city";
+
   const safeEventId = id.replace(/[^a-zA-Z0-9_-]/g, "");
   const ext = format === "excel" || format === "xlsx" ? "xlsx" : "csv";
-  const filename = `registrations_${safeEventId}.${ext}`;
+
+  // include city in the filename
+  const filename = `registrations_${citySlug}.${ext}`;
   const key = `exports/events/${safeEventId}/${filename}`;
 
   const buffer =

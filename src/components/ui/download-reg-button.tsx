@@ -54,7 +54,7 @@ export default function DownloadRegistrationsButton({ eventId }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button disabled={loading} variant="outline">
+        <Button disabled={loading} variant="link">
           {loading ? "..." : <FaDownload />}
         </Button>
       </DropdownMenuTrigger>

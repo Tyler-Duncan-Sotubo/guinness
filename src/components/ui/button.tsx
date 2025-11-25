@@ -5,12 +5,15 @@ import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
-  "inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap rounded-md text-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
+        // 👇 DEFAULT NOW MATCHES GXButton PRIMARY
         default:
-          "bg-monzo-brandDark text-monzo-text-primary shadow hover:bg-monzo-brandDark",
+          "bg-amber-400 text-black hover:bg-amber-300 shadow" +
+          " rounded-full uppercase tracking-[0.2em] text-xs px-6 py-3",
+
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 font-semibold",
         outline:
