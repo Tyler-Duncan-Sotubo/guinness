@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import MetaPixel from "../plugin/meta-pixel";
 
 type MatchdayLayoutProps = {
   children: ReactNode;
@@ -27,6 +28,7 @@ export function MatchdayLayout({ children }: MatchdayLayoutProps) {
       {/* <Header /> */}
 
       <main className="relative z-10 flex-1">
+        <MetaPixel />
         <div className="max-w-6xl mx-auto px-4 mt-20">{children}</div>
       </main>
     </div>
