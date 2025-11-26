@@ -11,7 +11,15 @@ export type DemoMatch = {
 
 export const DEMO_MATCHES: DemoMatch[] = [
   {
-    id: "cp-mun-12",
+    id: "cp-mun-12-11-25",
+    dateLabel: "25 NOV",
+    kickoffLabel: "12:00",
+    kickoffAt: "2025-11-25T12:00:00+01:00", // adjust to your TZ
+    homeTeam: "Manchester City",
+    awayTeam: "Leeds United",
+  },
+  {
+    id: "cp-mun-12-11-25",
     dateLabel: "30 NOV",
     kickoffLabel: "12:00",
     kickoffAt: "2025-11-30T12:00:00+01:00", // adjust to your TZ
@@ -19,7 +27,7 @@ export const DEMO_MATCHES: DemoMatch[] = [
     awayTeam: "Manchester United",
   },
   {
-    id: "whu-liv-1405",
+    id: "whu-liv-1405-11-25",
     dateLabel: "30 NOV",
     kickoffLabel: "14:05",
     kickoffAt: "2025-11-30T14:05:00+01:00",
@@ -27,7 +35,7 @@ export const DEMO_MATCHES: DemoMatch[] = [
     awayTeam: "Liverpool",
   },
   {
-    id: "che-ars-1630",
+    id: "che-ars-1630-11-25",
     dateLabel: "30 NOV",
     kickoffLabel: "16:30",
     kickoffAt: "2025-11-30T16:30:00+01:00",

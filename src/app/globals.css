@@ -144,29 +144,31 @@
   --monzo-success: #16a34a;
   --monzo-error: #f87171;
 }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
-  /* iOS + Chrome iOS both use WebKit */
-  @supports (-webkit-touch-callout: none) {
-    input,
-    select,
-    textarea,
-    button {
-      font-size: 16px;
-    }
+
+  /* Make inputs 16px on small screens (prevents iOS zoom) */
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px;
   }
-  /* Optional: do it for all small screens (covers Android too) */
-  @media (max-width: 640px) {
+
+  /* Optionally shrink again from sm: up (>= 640px) if you want */
+  @media (min-width: 640px) {
     input,
     select,
     textarea,
     button {
-      font-size: 16px;
+      font-size: 0.875rem; /* Tailwind's text-sm (14px) */
     }
   }
 }

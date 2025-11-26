@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Roboto_Condensed } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   title: "Guinness Matchday – Event Registration & Experiences",
   description:
     "Register for Guinness Matchday events, explore epic football viewing experiences, and stay connected with the Guinness Football Fans community.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

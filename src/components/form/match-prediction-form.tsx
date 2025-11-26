@@ -78,7 +78,7 @@ export function MatchPredictionForm({
             rules={{ required: "Required" }}
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel className="block text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                <FormLabel className="block text-[9px] font-semibold uppercase tracking-widest text-neutral-400">
                   {homeTeam}
                 </FormLabel>
 
@@ -113,7 +113,7 @@ export function MatchPredictionForm({
             rules={{ required: "Required" }}
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel className="block text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                <FormLabel className="block text-[9px] font-semibold uppercase tracking-widest text-neutral-400">
                   {awayTeam}
                 </FormLabel>
 

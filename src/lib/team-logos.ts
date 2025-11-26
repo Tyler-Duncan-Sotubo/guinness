@@ -10,4 +10,8 @@ export const TEAM_LOGOS: Record<string, string> = {
   Liverpool: "https://crests.football-data.org/64.png",
   Chelsea: "https://crests.football-data.org/61.png",
   Arsenal: "https://crests.football-data.org/57.png",
+
+  // ✅ New
+  "Manchester City": "https://crests.football-data.org/65.png",
+  "Leeds United": "https://crests.football-data.org/341.png",
 };
