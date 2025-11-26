@@ -10,4 +10,7 @@ export const TEAM_ACRONYMS: Record<string, string> = {
   Liverpool: "LIV",
   Chelsea: "CHE",
   Arsenal: "ARS",
+  Tottenham: "TOT",
+  "Manchester City": "MCI",
+  "Leeds United": "LEEDS",
 };
