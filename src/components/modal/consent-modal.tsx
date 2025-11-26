@@ -73,7 +73,7 @@ export function ConsentModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={showCloseButton}
-        className="max-w-md bg-black text-white border-neutral-800"
+        className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-black text-white border border-neutral-800"
         onEscapeKeyDown={(e) => {
           if (!dismissible) e.preventDefault();
         }}

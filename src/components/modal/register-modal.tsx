@@ -147,7 +147,7 @@ export function RegisterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-black text-white border-neutral-800">
+      <DialogContent className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-black text-white border border-neutral-800">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold leading-tight uppercase">
             Create your Match Day account

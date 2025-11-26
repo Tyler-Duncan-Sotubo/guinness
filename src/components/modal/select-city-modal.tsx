@@ -107,7 +107,7 @@ export function SelectCityModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-black text-white border-neutral-800">
+      <DialogContent className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-black text-white border border-neutral-800">
         {/* Background image */}
         <div className="pointer-events-none absolute inset-0 opacity-20">
           <Image
