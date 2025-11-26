@@ -31,7 +31,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-muted-foreground",
             "disabled:cursor-not-allowed disabled:opacity-50",
             // 16px on mobile, 14px from sm: up
-            "text-base sm:text-sm leading-normal",
+            "text-[16px] sm:text-sm leading-normal",
             leftIcon || isPassword ? "pl-10" : "pl-5",
             rightIcon ? "pr-10" : "",
             "appearance-none",

@@ -161,16 +161,6 @@
   button {
     font-size: 16px;
   }
-
-  /* Optionally shrink again from sm: up (>= 640px) if you want */
-  @media (min-width: 640px) {
-    input,
-    select,
-    textarea,
-    button {
-      font-size: 0.875rem; /* Tailwind's text-sm (14px) */
-    }
-  }
 }
 
 /* e.g. in globals.css or spin-wheel.css */
