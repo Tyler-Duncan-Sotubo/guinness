@@ -6,6 +6,7 @@ import { NextAuthProvider } from "@/server/provider/session-provider";
 import Providers from "@/server/provider/query-provider";
 import { AppProvider } from "@/server/provider/app-provider";
 import { Suspense } from "react";
+import ScrollToTop from "@/components/navigation/ScrollToTop";
 
 const robotoCondensed = Roboto_Condensed({
   variable: "--font-roboto-condensed",
@@ -36,7 +37,9 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <NextAuthProvider>
             <Providers>
-              <AppProvider>{children}</AppProvider>
+              <AppProvider>
+                {children} <ScrollToTop />
+              </AppProvider>
             </Providers>
             <Toaster />
           </NextAuthProvider>

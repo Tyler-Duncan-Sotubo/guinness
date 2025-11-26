@@ -1,7 +1,7 @@
 // app/predit-and-win/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MatchdayLayout } from "@/components/layout/matchday-layout";
 import { GXButton } from "@/components/ui/gx-button";
@@ -38,6 +38,9 @@ export default function PredictAndWinPage() {
   const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  // 🔗 keep refs to each match card so we can scroll to it
+  const matchRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
   const createOrUpdatePrediction = useCreateMutation<PredictionDto>({
     endpoint: `/predictions`,
     successMessage: "Prediction saved",
@@ -48,7 +51,6 @@ export default function PredictAndWinPage() {
     },
   });
 
-  // 👇 single source of truth for “current email we should use”
   const effectiveEmail = verifiedEmail ?? predictEmail;
 
   const { data: predictionData, isLoading } = useQuery({
@@ -62,23 +64,29 @@ export default function PredictAndWinPage() {
       if (!res.ok) return null;
       return res.json();
     },
-    enabled: !!effectiveEmail && !!eventId, // don’t fire until we actually have an email + eventId
+    enabled: !!effectiveEmail && !!eventId,
   });
 
-  // 🔑 Handle “loading from localStorage” vs “no email yet” cleanly
   useEffect(() => {
     if (!predictLoaded) return;
 
     if (predictEmail) {
-      // We’ve loaded a stored email → use it and don’t show the modal
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setVerifiedEmail(predictEmail);
       setEmailModalOpen(false);
     } else {
-      // No stored email → show the modal
       setEmailModalOpen(true);
     }
   }, [predictLoaded, predictEmail]);
+
+  // 🧭 whenever a match becomes active, scroll it into view
+  useEffect(() => {
+    if (!selectedMatchId) return;
+    const el = matchRefs.current[selectedMatchId];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [selectedMatchId]);
 
   if (!city || !eventId) {
     return (
@@ -100,13 +108,12 @@ export default function PredictAndWinPage() {
 
   const handleEmailComplete = (email: string) => {
     setVerifiedEmail(email);
-    setPredictEmail(email); // persists to localStorage
+    setPredictEmail(email);
     setEmailModalOpen(false);
   };
 
   const now = new Date();
 
-  // 🔒 Don’t render any of the Step 1 / matches until we know if we have a stored email
   if (!predictLoaded) {
     return (
       <MatchdayLayout>
@@ -142,7 +149,6 @@ export default function PredictAndWinPage() {
             </p>
           </header>
 
-          {/* 👇 No more flicker: this only renders once we know predictLoaded */}
           {!effectiveEmail ? (
             <section className="bg-neutral-950/60 border border-neutral-800 rounded-3xl p-5 md:p-6 space-y-4 text-center lg:text-left">
               <p className="text-xs uppercase tracking-[0.18em] text-neutral-400">
@@ -167,6 +173,9 @@ export default function PredictAndWinPage() {
                   return (
                     <div
                       key={match.id}
+                      ref={(el) => {
+                        matchRefs.current[match.id] = el;
+                      }}
                       className="border border-neutral-800 rounded-2xl px-4 py-3 bg-neutral-950/60 space-y-3"
                     >
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -237,13 +246,11 @@ export default function PredictAndWinPage() {
                               )
                             }
                           >
-                            {existingPrediction
-                              ? isActive
-                                ? "Hide prediction"
-                                : "Edit prediction"
-                              : isActive
-                              ? "Hide prediction"
-                              : "Predict this match"}
+                            {isActive
+                              ? "Close form"
+                              : existingPrediction
+                              ? "Edit prediction"
+                              : "Make prediction"}
                           </GXButton>
                         ) : (
                           <p className="text-[0.7rem] text-red-400 font-semibold uppercase tracking-[0.18em]">
@@ -305,7 +312,7 @@ export default function PredictAndWinPage() {
             </section>
           )}
 
-          <div className="pt-4 border-t border-neutral-900 mt-6 flex justify-center lg:justify-start">
+          <div className="pt-4 border-t border-neutral-900 my-10 flex justify-center lg:justify-start">
             <GXButton
               variant="secondary"
               onClick={() => router.push("/")}

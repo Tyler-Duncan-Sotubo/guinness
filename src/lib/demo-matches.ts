@@ -11,7 +11,7 @@ export type DemoMatch = {
 
 export const DEMO_MATCHES: DemoMatch[] = [
   {
-    id: "cp-mun-12-11-25",
+    id: "mci-lee-25-11-25",
     dateLabel: "25 NOV",
     kickoffLabel: "12:00",
     kickoffAt: "2025-11-25T12:00:00+01:00", // adjust to your TZ
