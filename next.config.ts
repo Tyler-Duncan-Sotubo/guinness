@@ -2,7 +2,7 @@
 const nextConfig = {
   images: {
     unoptimized: true,
-    domains: ["res.cloudinary.com"], // ✅ Add your image hostname here
+    domains: ["res.cloudinary.com", "crests.football-data.org"], // ✅ Add your image hostname here
   },
 };
 
