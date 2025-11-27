@@ -1,6 +1,6 @@
 // data/sidebar.data.tsx
 import React, { JSX } from "react";
-import { LayoutDashboard, MapPin, CalendarDays } from "lucide-react";
+import { LayoutDashboard, MapPin, CalendarDays, Table } from "lucide-react";
 
 type BaseItem = {
   title: string;
@@ -39,7 +39,7 @@ export const main: readonly MenuItem[] = [
   },
   {
     title: "Matches",
-    icon: <CalendarDays size={20} />,
+    icon: <Table size={20} />,
     link: "/dashboard/matches",
   },
 ] as const;
