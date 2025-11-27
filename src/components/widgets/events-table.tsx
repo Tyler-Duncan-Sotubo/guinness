@@ -13,6 +13,7 @@ import DownloadRegistrationsButton from "../ui/download-reg-button";
 import { format } from "date-fns";
 import MatchModal, { MatchFormValues } from "../modal/matches-modal";
 import { IoFootballOutline } from "react-icons/io5";
+import PredictAndWinLink from "../plugin/copy-to-clipboard";
 
 const columns = (
   onEditEvent: (evt: EventItem) => void,
@@ -58,17 +59,9 @@ const columns = (
   },
   {
     accessorKey: "startsAt",
-    header: "Starts",
+    header: "Date",
     cell: ({ row }) =>
       format(new Date(row.getValue<string>("startsAt")), "d 'of' LLLL"),
-  },
-  {
-    accessorKey: "endsAt",
-    header: "Ends",
-    cell: ({ row }) =>
-      row.getValue<string | null>("endsAt")
-        ? format(new Date(row.getValue<string>("endsAt")!), "d 'of' LLLL")
-        : "-",
   },
   {
     accessorKey: "isEpic",
@@ -90,7 +83,7 @@ const columns = (
       const evt = row.original;
 
       return (
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap justify-center items-center gap-8">
           {/* Edit event */}
           <Button
             variant="link"
@@ -102,7 +95,18 @@ const columns = (
 
           {/* Delete event */}
           <DeleteButton itemId={evt.id} type="event" showText />
+        </div>
+      );
+    },
+  },
+  {
+    id: "download-registrations",
+    header: "Registrations",
+    cell: ({ row }) => {
+      const evt = row.original;
 
+      return (
+        <div className="flex justify-center">
           {/* Download registrations (Epic only) */}
           {evt.isEpic ? <DownloadRegistrationsButton eventId={evt.id} /> : null}
         </div>
@@ -120,6 +124,15 @@ const columns = (
           <IoFootballOutline />
         </Button>
       );
+    },
+  },
+  {
+    id: "predict-link",
+    header: "Predict Link",
+    cell: ({ row }) => {
+      const evt = row.original;
+
+      return <PredictAndWinLink city={evt.city} eventId={evt.id} />;
     },
   },
 ];
