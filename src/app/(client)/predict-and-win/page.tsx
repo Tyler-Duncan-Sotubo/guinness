@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MatchdayLayout } from "@/components/layout/matchday-layout";
 import { GXButton } from "@/components/ui/gx-button";
-import { DEMO_MATCHES } from "@/lib/demo-matches";
 import { isMatchOpen } from "@/lib/match-time";
 import { EmailGateModal } from "@/components/modal/email-gate.modal";
 import { MatchPredictionForm } from "@/components/form/match-prediction-form";
@@ -16,6 +15,8 @@ import { useCreateMutation } from "@/hooks/use-create-mutation";
 import { useQuery } from "@tanstack/react-query";
 import { useAppContext } from "@/server/provider/app-provider";
 import Loading from "@/components/ui/loading";
+import { format } from "date-fns";
+import { MatchItem } from "@/types/matches";
 
 type PredictionDto = {
   email: string;
@@ -53,7 +54,8 @@ export default function PredictAndWinPage() {
 
   const effectiveEmail = verifiedEmail ?? predictEmail;
 
-  const { data: predictionData, isLoading } = useQuery({
+  // Fetch predictions for this email + event
+  const { data: predictionData, isLoading: isPredictionsLoading } = useQuery({
     queryKey: ["prediction", effectiveEmail, eventId],
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -65,6 +67,21 @@ export default function PredictAndWinPage() {
       return res.json();
     },
     enabled: !!effectiveEmail && !!eventId,
+  });
+
+  // Fetch matches for this event
+  const { data: matchesData, isLoading: isMatchesLoading } = useQuery<
+    MatchItem[]
+  >({
+    queryKey: ["matches:forEvent", eventId],
+    queryFn: async () => {
+      if (!eventId) return [];
+      const res = await fetch(`/api/matches/${eventId}`);
+      if (!res.ok) throw new Error("Failed to fetch matches");
+      const json = await res.json();
+      return (json.items ?? []) as MatchItem[];
+    },
+    enabled: !!eventId,
   });
 
   useEffect(() => {
@@ -114,15 +131,7 @@ export default function PredictAndWinPage() {
 
   const now = new Date();
 
-  if (!predictLoaded) {
-    return (
-      <MatchdayLayout>
-        <Loading />
-      </MatchdayLayout>
-    );
-  }
-
-  if (isLoading) {
+  if (!predictLoaded || isPredictionsLoading || isMatchesLoading) {
     return (
       <MatchdayLayout>
         <Loading />
@@ -161,9 +170,20 @@ export default function PredictAndWinPage() {
             </section>
           ) : (
             <section>
+              {(!matchesData || matchesData.length === 0) && (
+                <p className="text-sm text-neutral-400 mb-4">
+                  No matches have been configured for this event yet.
+                </p>
+              )}
+
               <div className="space-y-3">
-                {DEMO_MATCHES.map((match) => {
-                  const open = isMatchOpen(match.kickoffAt, now);
+                {matchesData?.map((match) => {
+                  const kickoffDate = new Date(match.kickoffAt);
+
+                  const dateLabel = format(kickoffDate, "d MMM");
+                  const kickoffLabel = format(kickoffDate, "HH:mm");
+
+                  const open = isMatchOpen(kickoffDate, now);
                   const isActive = open && selectedMatchId === match.id;
 
                   const existingPrediction = predictionData?.items?.find(
@@ -176,53 +196,72 @@ export default function PredictAndWinPage() {
                       ref={(el) => {
                         matchRefs.current[match.id] = el;
                       }}
-                      className="border border-neutral-800 rounded-2xl px-4 py-3 bg-neutral-950/60 space-y-3"
+                      className="space-y-3 rounded-2xl border border-neutral-800 bg-neutral-950/60 px-4 py-3"
                     >
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
                         <div className="space-y-3 text-left">
                           <p className="text-[0.7rem] text-neutral-400">
-                            {match.dateLabel} · {match.kickoffLabel}
+                            {dateLabel} · {kickoffLabel}
                           </p>
 
-                          <div className="flex items-center justify-center gap-3 w-full">
-                            {/* Home team */}
-                            <div className="flex items-center gap-2 min-w-0">
-                              <Image
-                                src={TEAM_LOGOS[match.homeTeam]}
-                                alt={match.homeTeam}
-                                width={26}
-                                height={26}
-                                className="rounded-full border border-neutral-800 shrink-0"
-                              />
-                              <span className="text-sm font-semibold text-neutral-50 truncate sm:hidden">
-                                {TEAM_ACRONYMS[match.homeTeam] ??
-                                  match.homeTeam}
-                              </span>
-                              <span className="text-lg font-semibold text-neutral-50 hidden sm:inline">
-                                {match.homeTeam}
-                              </span>
+                          {/* Teams block */}
+                          <div className="flex flex-col w-full gap-1">
+                            {/* Home team row */}
+                            <div className="flex items-center justify-between gap-2 w-full">
+                              <div className="flex items-center gap-2">
+                                <Image
+                                  src={TEAM_LOGOS[match.homeTeam]}
+                                  alt={match.homeTeam}
+                                  width={26}
+                                  height={26}
+                                  className="shrink-0 rounded-full border border-neutral-800"
+                                />
+
+                                {/* Acronym on mobile, full name on sm+ */}
+                                <span className="truncate text-base font-semibold text-neutral-50 sm:hidden">
+                                  {TEAM_ACRONYMS[match.homeTeam] ??
+                                    match.homeTeam}
+                                </span>
+                                <span className="hidden sm:inline text-base font-semibold text-neutral-50">
+                                  {match.homeTeam}
+                                </span>
+                              </div>
+
+                              {/* Final score (home) */}
+                              {match.finalHomeScore != null && (
+                                <span className="text-base font-bold text-neutral-100 ml-10">
+                                  {match.finalHomeScore}
+                                </span>
+                              )}
                             </div>
 
-                            <span className="text-xs md:text-sm uppercase tracking-[0.18em] text-neutral-500 shrink-0">
-                              VS
-                            </span>
+                            {/* Away team row */}
+                            <div className="flex items-center justify-between gap-2 w-full">
+                              <div className="flex items-center gap-2">
+                                <Image
+                                  src={TEAM_LOGOS[match.awayTeam]}
+                                  alt={match.awayTeam}
+                                  width={26}
+                                  height={26}
+                                  className="shrink-0 rounded-full border border-neutral-800"
+                                />
 
-                            {/* Away team */}
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span className="text-sm font-semibold text-neutral-50 truncate sm:hidden">
-                                {TEAM_ACRONYMS[match.awayTeam] ??
-                                  match.awayTeam}
-                              </span>
-                              <span className="text-lg font-semibold text-neutral-50 hidden sm:inline">
-                                {match.awayTeam}
-                              </span>
-                              <Image
-                                src={TEAM_LOGOS[match.awayTeam]}
-                                alt={match.awayTeam}
-                                width={26}
-                                height={26}
-                                className="rounded-full border border-neutral-800 shrink-0"
-                              />
+                                {/* Acronym on mobile, full name on sm+ */}
+                                <span className="truncate text-base font-semibold text-neutral-50 sm:hidden">
+                                  {TEAM_ACRONYMS[match.awayTeam] ??
+                                    match.awayTeam}
+                                </span>
+                                <span className="hidden sm:inline text-base font-semibold text-neutral-50">
+                                  {match.awayTeam}
+                                </span>
+                              </div>
+
+                              {/* Final score (away) */}
+                              {match.finalAwayScore != null && (
+                                <span className="text-base font-bold text-neutral-100 ml-10">
+                                  {match.finalAwayScore}
+                                </span>
+                              )}
                             </div>
                           </div>
 
@@ -237,6 +276,7 @@ export default function PredictAndWinPage() {
                           )}
                         </div>
 
+                        {/* Action / status */}
                         {open ? (
                           <GXButton
                             variant="primary"
@@ -253,20 +293,20 @@ export default function PredictAndWinPage() {
                               : "Make prediction"}
                           </GXButton>
                         ) : (
-                          <p className="text-[0.7rem] text-red-400 font-semibold uppercase tracking-[0.18em]">
+                          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-red-400">
                             Predictions closed
                           </p>
                         )}
 
                         {submitError && (
-                          <p className="text-xs text-red-400 mt-2">
+                          <p className="mt-2 text-xs text-red-400">
                             {submitError}
                           </p>
                         )}
                       </div>
 
                       {isActive && (
-                        <div className="mt-3 pt-3 border-t border-neutral-800 transition-all duration-300 ease-out">
+                        <div className="mt-3 border-t border-neutral-800 pt-3 transition-all duration-300 ease-out">
                           <MatchPredictionForm
                             homeTeam={match.homeTeam}
                             awayTeam={match.awayTeam}
@@ -295,8 +335,7 @@ export default function PredictAndWinPage() {
                                   dto,
                                   setSubmitError
                                 );
-                                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                              } catch (error) {
+                              } catch {
                                 setSubmitError(
                                   "Failed to submit prediction: try again later."
                                 );

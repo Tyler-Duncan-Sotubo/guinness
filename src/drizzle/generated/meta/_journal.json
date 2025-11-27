@@ -64,6 +64,20 @@
       "when": 1764175938228,
       "tag": "0008_lovely_living_tribunal",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1764244436958,
+      "tag": "0009_mysterious_the_fallen",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1764250830764,
+      "tag": "0010_breezy_solo",
+      "breakpoints": true
     }
   ]
 }

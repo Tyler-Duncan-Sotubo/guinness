@@ -9,3 +9,4 @@ export * from "./registrations";
 export * from "./quiz";
 export * from "./user_events_spins";
 export * from "./predictions";
+export * from "./matches";

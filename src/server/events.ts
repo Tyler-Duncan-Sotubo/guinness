@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// server/events.ts
 import "server-only";
 import { db } from "@/drizzle/drizzle";
 import { eq, asc } from "drizzle-orm";

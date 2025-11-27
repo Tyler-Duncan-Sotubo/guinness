@@ -1,7 +1,7 @@
-// lib/match-time.ts
+export function isMatchOpen(kickoffAt: string | Date, now: Date = new Date()) {
+  const kickoff = kickoffAt instanceof Date ? kickoffAt : new Date(kickoffAt);
 
-export function isMatchOpen(kickoffAtISO: string, now: Date = new Date()) {
-  const kickoff = new Date(kickoffAtISO);
   if (Number.isNaN(kickoff.getTime())) return false;
-  return now < kickoff; // only allow BEFORE kickoff
+
+  return now < kickoff; // still only allow BEFORE kickoff
 }

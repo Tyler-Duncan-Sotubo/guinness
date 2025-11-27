@@ -4,13 +4,12 @@ import "server-only";
 
 import { db } from "@/drizzle/drizzle";
 import { eq, and } from "drizzle-orm";
-
 import { attendees } from "@/drizzle/schema/attendees";
 import { registrations } from "@/drizzle/schema/registrations";
 import { predictions } from "@/drizzle/schema/predictions";
 import { eventGetById } from "@/server/events";
-import { DEMO_MATCHES } from "@/lib/demo-matches";
 import { isMatchOpen } from "@/lib/match-time";
+import { matches } from "@/drizzle/schema";
 
 type CreatePredictionInput = {
   email: string;
@@ -30,13 +29,28 @@ export async function predictionCreateOrUpdateForEmail(
   if (!eventResult.ok) {
     return { ok: false as const, error: "Invalid eventId" as const };
   }
-
   const event = eventResult.item;
 
-  // 2) Ensure matchId is valid AND still open (server-side check)
-  const match = DEMO_MATCHES.find((m) => m.id === matchId);
+  // 2) Ensure match exists, belongs to this event, and is still open
+  const [match] = await db
+    .select({
+      id: matches.id,
+      eventId: matches.eventId,
+      kickoffAt: matches.kickoffAt,
+    })
+    .from(matches)
+    .where(eq(matches.id, matchId))
+    .limit(1);
+
   if (!match) {
     return { ok: false as const, error: "Invalid matchId" as const };
+  }
+
+  if (match.eventId !== eventId) {
+    return {
+      ok: false as const,
+      error: "Match does not belong to this event" as const,
+    };
   }
 
   if (!isMatchOpen(match.kickoffAt)) {

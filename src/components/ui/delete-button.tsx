@@ -16,7 +16,7 @@ import { useDeleteMutation } from "@/hooks/use-delete-mutation";
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa6";
 
-type DeleteType = "location" | "event";
+type DeleteType = "location" | "event" | "match";
 
 type Props = {
   itemId: string;
@@ -41,6 +41,11 @@ const deleteConfigMap: Record<
     endpoint: (id) => `/events/${id}`,
     successMessage: "Event deleted",
     refetchKey: "events",
+  },
+  match: {
+    endpoint: (id) => `/matches/${id}`,
+    successMessage: "Match deleted",
+    refetchKey: "matches",
   },
 };
 

@@ -37,4 +37,9 @@ export const main: readonly MenuItem[] = [
     icon: <CalendarDays size={20} />,
     link: "/dashboard/events",
   },
+  {
+    title: "Matches",
+    icon: <CalendarDays size={20} />,
+    link: "/dashboard/matches",
+  },
 ] as const;
