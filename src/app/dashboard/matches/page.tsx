@@ -9,8 +9,11 @@ import ErrorState from "@/components/ui/error-state";
 import Loading from "@/components/ui/loading";
 import MatchesTable from "@/components/widgets/matches-table"; // adjust path if needed
 import { MatchItem } from "@/types/matches";
+import { GXButton } from "@/components/ui/gx-button";
+import { IoRefreshCircleOutline } from "react-icons/io5";
 
 export default function MatchesPage() {
+  const [isSyncing, setIsSyncing] = React.useState(false);
   const fetchMatches = async (): Promise<MatchItem[]> => {
     try {
       const res = await api.get("/matches");
@@ -19,6 +22,24 @@ export default function MatchesPage() {
     } catch (error) {
       if (isAxiosError(error) && error.response) return [];
       throw error;
+    }
+  };
+
+  const SyncLatestResults = async () => {
+    try {
+      setIsSyncing(true);
+      const res = await api.get("/fixtures/sync-results", {
+        headers: {
+          "x-cron-key": process.env.CRON_SECRET || "",
+        },
+      });
+      // expecting { items: MatchItem[] }
+      return res.data.updated ?? 0;
+    } catch (error) {
+      if (isAxiosError(error) && error.response) return 0;
+      throw error;
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -48,7 +69,14 @@ export default function MatchesPage() {
       <PageHeader
         title="Matches"
         description="Manage scheduled matches for all events."
-      />
+      >
+        <GXButton onClick={SyncLatestResults}>
+          <span className={isSyncing ? "animate-spin" : ""}>
+            <IoRefreshCircleOutline size={30} />
+          </span>
+          Sync Results
+        </GXButton>
+      </PageHeader>
 
       {Array.isArray(matches) && matches.length > 0 ? (
         <MatchesTable data={matches} />

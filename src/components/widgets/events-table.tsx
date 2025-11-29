@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import MatchModal, { MatchFormValues } from "../modal/matches-modal";
 import { IoFootballOutline } from "react-icons/io5";
 import PredictAndWinLink from "../plugin/copy-to-clipboard";
+import DownloadPredictionsButton from "../ui/download-winners-button";
 
 const columns = (
   onEditEvent: (evt: EventItem) => void,
@@ -39,23 +40,6 @@ const columns = (
   {
     accessorKey: "venue",
     header: "Venue",
-  },
-  {
-    accessorKey: "title",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="px-0 hover:bg-transparent"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Title <ChevronUpDown />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="truncate max-w-[260px]">
-        {row.getValue<string>("title")}
-      </div>
-    ),
   },
   {
     accessorKey: "startsAt",
@@ -133,6 +117,15 @@ const columns = (
       const evt = row.original;
 
       return <PredictAndWinLink city={evt.city} eventId={evt.id} />;
+    },
+  },
+  {
+    id: "get-winners",
+    header: "Winners",
+    cell: ({ row }) => {
+      const evt = row.original;
+
+      return <DownloadPredictionsButton eventId={evt.id} city={evt.city} />;
     },
   },
 ];

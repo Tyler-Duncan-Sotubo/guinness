@@ -7,15 +7,11 @@ import { and, eq, lt, isNull } from "drizzle-orm";
 const API_BASE = "https://api.football-data.org/v4";
 const API_KEY = process.env.API_FOOTBALL_KEY!;
 
-export async function GET(req: Request) {
-  // optional simple secret check
-  const auth = req.headers.get("x-cron-key");
-  if (process.env.CRON_SECRET && auth !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+export async function GET() {
   try {
     const now = new Date();
+
+    console.log("sync-results: starting sync at", now.toISOString());
 
     // 1) Find matches that have kicked off but don't have final scores yet
     const pending = await db
@@ -36,6 +32,8 @@ export async function GET(req: Request) {
     if (!pending.length) {
       return NextResponse.json({ ok: true, updated: 0 });
     }
+
+    console.log(`sync-results: found ${pending.length} pending matches`);
 
     let updatedCount = 0;
 
@@ -72,6 +70,8 @@ export async function GET(req: Request) {
 
       updatedCount++;
     }
+
+    console.log(`sync-results: updated ${updatedCount} matches`);
 
     return NextResponse.json({ ok: true, updated: updatedCount });
   } catch (err) {
