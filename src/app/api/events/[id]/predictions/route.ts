@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/drizzle/drizzle";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { matches } from "@/drizzle/schema";
 import { attendees } from "@/drizzle/schema/attendees";
 import { registrations } from "@/drizzle/schema/registrations";
@@ -43,19 +43,20 @@ const scorePrediction = (args: {
   if (isExact) points = 3;
   else if (isOutcomeCorrect) points = 1;
 
-  return {
-    isScored: true,
-    isExact,
-    isOutcomeCorrect,
-    points,
-  };
+  return { isScored: true, isExact, isOutcomeCorrect, points };
 };
+
+// Only consider these two matches
+const INCLUDED_MATCH_IDS = [
+  "893b0f79-063d-43f3-a236-0aecca606e8b",
+  "d32c0de4-e350-478d-bea4-693fd834d764",
+];
 
 export async function POST(req: Request, ctx: Ctx) {
   const { id } = await ctx.params;
   const { format = "csv", city } = await req.json().catch(() => ({}));
 
-  // 1) Get all matches for the event (to build dynamic columns)
+  // 1) Get ONLY the included matches
   const matchRows = await db
     .select({
       id: matches.id,
@@ -65,42 +66,32 @@ export async function POST(req: Request, ctx: Ctx) {
       finalAway: matches.finalAwayScore,
     })
     .from(matches)
-    .where(eq(matches.eventId, id));
+    .where(
+      and(eq(matches.eventId, id), inArray(matches.id, INCLUDED_MATCH_IDS))
+    );
 
-  if (!matchRows.length) {
-    return new Response("No matches for this event", { status: 404 });
-  }
+  if (!matchRows.length)
+    return new Response("No included matches", { status: 404 });
 
-  // Each match -> 1 field/column
-  const matchMap = new Map<
-    string,
-    {
-      label: string;
-      finalHome: number | null;
-      finalAway: number | null;
-      field: string;
-    }
-  >();
-
+  const matchMap = new Map();
   matchRows.forEach((m, index) => {
-    const label = `${m.homeTeam} vs ${m.awayTeam}`;
-    const field = `match_${index + 1}`;
     matchMap.set(m.id, {
-      label,
+      label: `${m.homeTeam} vs ${m.awayTeam}`,
       finalHome: m.finalHome,
       finalAway: m.finalAway,
-      field,
+      field: `match_${index + 1}`,
     });
   });
 
-  // 2) Get all predictions for this event (joined with attendees + matches)
+  // 2) Get predictions including createdAt
   const predictionRows = await db
     .select({
       attendeeEmail: attendees.email,
-      attendeeName: attendees.name, // assumes `name` column on attendees
+      attendeeName: attendees.name,
       matchId: predictions.matchId,
       predHome: predictions.homeScore,
       predAway: predictions.awayScore,
+      createdAt: predictions.createdAt, // ✅ NEW
     })
     .from(predictions)
     .innerJoin(registrations, eq(registrations.id, predictions.registrationId))
@@ -109,11 +100,15 @@ export async function POST(req: Request, ctx: Ctx) {
       matches,
       and(eq(matches.id, predictions.matchId), eq(matches.eventId, id))
     )
-    .where(eq(predictions.eventId, id));
+    .where(
+      and(
+        eq(predictions.eventId, id),
+        inArray(predictions.matchId, INCLUDED_MATCH_IDS)
+      )
+    );
 
-  if (!predictionRows.length) {
-    return new Response("No predictions for this event", { status: 404 });
-  }
+  if (!predictionRows.length)
+    return new Response("No predictions for included matches", { status: 404 });
 
   type RowAgg = {
     attendeeEmail: string;
@@ -121,13 +116,21 @@ export async function POST(req: Request, ctx: Ctx) {
     totalPoints: number;
     totalPredictions: number;
     percentage: number;
-    [key: string]: string | number;
+    firstTimestamp: Date | null; // ✅ NEW
+    [key: string]: string | number | Date | null;
   };
 
   const byEmail = new Map<string, RowAgg>();
 
   for (const row of predictionRows) {
-    const { attendeeEmail, attendeeName, matchId, predHome, predAway } = row;
+    const {
+      attendeeEmail,
+      attendeeName,
+      matchId,
+      predHome,
+      predAway,
+      createdAt,
+    } = row;
     const matchInfo = matchMap.get(matchId);
     if (!matchInfo) continue;
 
@@ -139,34 +142,32 @@ export async function POST(req: Request, ctx: Ctx) {
         totalPoints: 0,
         totalPredictions: 0,
         percentage: 0,
+        firstTimestamp: createdAt, // first prediction time
       };
 
-      // init all match fields as empty strings
-      for (const info of matchMap.values()) {
-        agg[info.field] = "";
-      }
-
+      for (const info of matchMap.values()) agg[info.field] = "";
       byEmail.set(attendeeEmail, agg);
+    } else {
+      // earlier timestamp wins
+      if (
+        !agg.firstTimestamp ||
+        (createdAt && createdAt < agg.firstTimestamp)
+      ) {
+        agg.firstTimestamp = createdAt;
+      }
     }
 
     agg.totalPredictions += 1;
 
     const predStr = `${predHome}-${predAway}`;
-
     const finalStr =
-      matchInfo.finalHome === null || matchInfo.finalAway === null
-        ? ""
-        : `${matchInfo.finalHome}-${matchInfo.finalAway}`;
+      matchInfo.finalHome != null && matchInfo.finalAway != null
+        ? `${matchInfo.finalHome}-${matchInfo.finalAway}`
+        : "";
 
-    // Single cell per match: "3-0 (prediction) / 2-1 (final)"
-    let combined = "";
-    if (finalStr) {
-      combined = `${predStr} (prediction) / ${finalStr} (final)`;
-    } else {
-      combined = `${predStr} (prediction)`;
-    }
-
-    agg[matchInfo.field] = combined;
+    agg[matchInfo.field] = finalStr
+      ? `${predStr} (prediction) / ${finalStr} (final)`
+      : `${predStr} (prediction)`;
 
     const scored = scorePrediction({
       predHome,
@@ -175,36 +176,37 @@ export async function POST(req: Request, ctx: Ctx) {
       finalAway: matchInfo.finalAway,
     });
 
-    if (scored.isScored) {
-      agg.totalPoints += scored.points;
-    }
+    if (scored.isScored) agg.totalPoints += scored.points;
   }
 
   let items = Array.from(byEmail.values());
-  if (!items.length) {
-    return new Response("No predictions for this event", { status: 404 });
-  }
+  if (!items.length)
+    return new Response("No predictions found", { status: 404 });
 
-  // 3) Compute percentage for each player
+  // 3) Calculate accuracy
   for (const item of items) {
-    const maxPossiblePoints = item.totalPredictions * 3; // 3 pts per prediction max
-    item.percentage = maxPossiblePoints
-      ? Number(((item.totalPoints / maxPossiblePoints) * 100).toFixed(2))
+    const maxPoints = item.totalPredictions * 3;
+    item.percentage = maxPoints
+      ? Number(((item.totalPoints / maxPoints) * 100).toFixed(2))
       : 0;
   }
 
-  // 4) Sort: highest percentage first, then highest totalPoints
+  // 4) Sort with FAST-FINGERS:
+  //    1. Higher accuracy
+  //    2. Higher total points
+  //    3. Earlier createdAt wins
   items = items.sort((a, b) => {
-    if (b.percentage !== a.percentage) {
-      return b.percentage - a.percentage;
-    }
-    return b.totalPoints - a.totalPoints;
+    if (b.percentage !== a.percentage) return b.percentage - a.percentage;
+    if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+    return (
+      (a.firstTimestamp?.getTime() ?? 0) - (b.firstTimestamp?.getTime() ?? 0)
+    );
   });
 
-  // 5) Columns: Name, Email, each match, Accuracy, Total Points
+  // 5) Build export file
   const matchColumns = Array.from(matchMap.values()).map((info) => ({
     field: info.field,
-    title: info.label, // e.g. "Chelsea vs Arsenal"
+    title: info.label,
   }));
 
   const columns = [
@@ -212,27 +214,25 @@ export async function POST(req: Request, ctx: Ctx) {
     { field: "attendeeEmail", title: "Email" },
     ...matchColumns,
     { field: "percentage", title: "Accuracy (%)" },
-    { field: "totalPoints", title: "Total Points" }, // last column
+    { field: "totalPoints", title: "Total Points" },
+    { field: "firstTimestamp", title: "Submitted At" }, // optional column
   ];
 
-  // 6) Normalize rows for export
   const rows = items.map((r) => {
     const base: any = {
       attendeeName: r.attendeeName,
       attendeeEmail: r.attendeeEmail,
-      percentage: Number(r.percentage ?? 0),
-      totalPoints: Number(r.totalPoints ?? 0),
+      percentage: r.percentage,
+      totalPoints: r.totalPoints,
+      firstTimestamp: r.firstTimestamp?.toISOString() ?? "",
     };
 
-    for (const info of matchMap.values()) {
+    for (const info of matchMap.values())
       base[info.field] = String(r[info.field] ?? "");
-    }
-
     return base;
   });
 
   const ext = format === "excel" || format === "xlsx" ? "xlsx" : "csv";
-
   const safeEventId = id.replace(/[^a-zA-Z0-9_-]/g, "");
   const filename = `predictions_${city}.${ext}`;
   const key = `exports/events/${safeEventId}/${filename}`;
@@ -245,5 +245,15 @@ export async function POST(req: Request, ctx: Ctx) {
   const mimeType = guessMimeType(filename);
   const { url } = await uploadBufferToS3(buffer, key, mimeType);
 
-  return Response.json({ ok: true, url, key });
+  // 7) Winners payload for UI (with timestamp)
+  const winners = items.map((item, index) => ({
+    rank: index + 1,
+    name: item.attendeeName,
+    email: item.attendeeEmail,
+    totalPoints: item.totalPoints,
+    percentage: item.percentage,
+    submittedAt: item.firstTimestamp?.toISOString() ?? "",
+  }));
+
+  return Response.json({ ok: true, url, key, winners });
 }
