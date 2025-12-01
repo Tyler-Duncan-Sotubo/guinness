@@ -183,6 +183,7 @@ export function SelectCityModal({
                       <button
                         key={event.id}
                         type="button"
+                        disabled={event.endsAt < new Date().toISOString()}
                         onClick={() => handleSelect(event)}
                         className="text-left rounded-2xl border cursor-pointer border-neutral-800 bg-neutral-950/60 hover:border-amber-400 hover:bg-neutral-900/80 transition-colors p-4 space-y-2"
                       >
@@ -207,6 +208,11 @@ export function SelectCityModal({
                             {event.venue ? ` · ${event.venue}` : null}
                           </p>
                         </div>
+                        {event.endsAt < new Date().toISOString() && (
+                          <p className="text-xs text-red-400 font-semibold">
+                            This event has ended
+                          </p>
+                        )}
                       </button>
                     );
                   })}
