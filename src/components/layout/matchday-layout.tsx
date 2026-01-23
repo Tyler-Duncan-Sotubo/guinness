@@ -12,7 +12,7 @@ export function MatchdayLayout({ children }: MatchdayLayoutProps) {
     <div
       className="
         relative min-h-screen text-white flex flex-col overflow-hidden
-
+        bg-black
         /* Mobile background */
         bg-[url('https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763472025/Mobile_au5sug.webp')]
 

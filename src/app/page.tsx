@@ -36,16 +36,7 @@ export default function HomePage() {
         <div className="relative z-10 px-4 py-4">
           {/* Hero section */}
           <section className="grid md:grid-cols-3 gap-10 items-center">
-            <div className="hidden md:block relative w-full max-w-sm mx-auto md:max-w-none aspect-3/4 md:aspect-3/5">
-              <Image
-                src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763043324/guinness-hero_dl8cx7.png"
-                alt="Guinness Match Day"
-                fill
-                priority
-                sizes="(min-width: 768px) 33vw, 80vw"
-                className="object-contain"
-              />
-            </div>
+            <div className="hidden md:block relative w-full max-w-sm mx-auto md:max-w-none aspect-3/4 md:aspect-3/5"></div>
 
             <div className="col-span-2">
               <div className="mb-4">
