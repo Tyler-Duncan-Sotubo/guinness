@@ -73,7 +73,7 @@ export function ConsentModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={showCloseButton}
-        className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-black text-white border border-neutral-800"
+        className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-black text-white border border-neutral-800 overflow-hidden"
         onEscapeKeyDown={(e) => {
           if (!dismissible) e.preventDefault();
         }}
@@ -81,15 +81,24 @@ export function ConsentModal({
           if (!dismissible) e.preventDefault();
         }}
       >
+        {/* Background image */}
+        <Image
+          src="https://centa-hr.s3.eu-west-3.amazonaws.com/companies/019bbc22-ee74-7bfa-a6af-0a801a3d2e24/stores/019bbc3e-20be-7f38-85ed-c6867a6c0cfc/media/files/tmp/019f1498-98eb-783e-ae53-9d7e10408a9e-image1.png"
+          alt=""
+          fill
+          className="object-cover object-center pointer-events-none opacity-10"
+          aria-hidden
+          unoptimized
+        />
+
         <DialogHeader className="relative">
           <DialogTitle className="text-2xl font-semibold leading-tight uppercase"></DialogTitle>
         </DialogHeader>
 
-        {/* ...rest of your existing JSX (age gate, checkbox, button)... */}
-        <section className="space-y-4 text-center">
+        <section className="relative z-10 space-y-4 text-center">
           <div className="relative w-52 h-52 mx-auto">
             <Image
-              src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+              src="https://centa-hr.s3.eu-west-3.amazonaws.com/companies/019bbc22-ee74-7bfa-a6af-0a801a3d2e24/stores/019bbc3e-20be-7f38-85ed-c6867a6c0cfc/media/files/tmp/019f1498-98eb-783e-ae53-9d7e10408a9e-image1.png"
               alt="Guinness Matchday"
               fill
               className="object-center"

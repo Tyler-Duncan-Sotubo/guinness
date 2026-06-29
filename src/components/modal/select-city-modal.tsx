@@ -111,7 +111,7 @@ export function SelectCityModal({
         {/* Background image */}
         <div className="pointer-events-none absolute inset-0 opacity-20">
           <Image
-            src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+            src="https://centa-hr.s3.eu-west-3.amazonaws.com/companies/019bbc22-ee74-7bfa-a6af-0a801a3d2e24/stores/019bbc3e-20be-7f38-85ed-c6867a6c0cfc/media/files/tmp/019f1498-98eb-783e-ae53-9d7e10408a9e-image1.png"
             alt="Guinness Matchday"
             fill
             className="object-contain object-center"
@@ -183,7 +183,6 @@ export function SelectCityModal({
                       <button
                         key={event.id}
                         type="button"
-                        disabled={event.endsAt < new Date().toISOString()}
                         onClick={() => handleSelect(event)}
                         className="text-left rounded-2xl border cursor-pointer border-neutral-800 bg-neutral-950/60 hover:border-amber-400 hover:bg-neutral-900/80 transition-colors p-4 space-y-2"
                       >
@@ -208,11 +207,6 @@ export function SelectCityModal({
                             {event.venue ? ` · ${event.venue}` : null}
                           </p>
                         </div>
-                        {event.endsAt < new Date().toISOString() && (
-                          <p className="text-xs text-red-400 font-semibold">
-                            This event has ended
-                          </p>
-                        )}
                       </button>
                     );
                   })}

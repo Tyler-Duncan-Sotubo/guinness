@@ -127,7 +127,7 @@ export function EmailGateModal({
         {/* Background image */}
         <div className="pointer-events-none absolute inset-0 opacity-20">
           <Image
-            src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+            src="https://centa-hr.s3.eu-west-3.amazonaws.com/companies/019bbc22-ee74-7bfa-a6af-0a801a3d2e24/stores/019bbc3e-20be-7f38-85ed-c6867a6c0cfc/media/files/tmp/019f1498-98eb-783e-ae53-9d7e10408a9e-image1.png"
             alt="Guinness Matchday"
             fill
             className="object-contain object-center"

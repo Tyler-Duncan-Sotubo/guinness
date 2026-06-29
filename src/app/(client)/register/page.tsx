@@ -39,7 +39,7 @@ type EventWithLocation = {
 };
 
 async function fetchEventWithLocation(
-  eventId: string
+  eventId: string,
 ): Promise<EventWithLocation> {
   const res = await fetch(`/api/events/${eventId}`);
   if (!res.ok) {
@@ -121,8 +121,8 @@ export default function RegistrationPage() {
     isEventError && eventError instanceof Error
       ? eventError.message
       : isEventError
-      ? "Failed to load event details."
-      : null;
+        ? "Failed to load event details."
+        : null;
 
   // On first client render, if consent is missing, open the consent modal
   useEffect(() => {
@@ -158,7 +158,7 @@ export default function RegistrationPage() {
     // Check notices first
     if (!imageRightsAccepted || !dataPrivacyAccepted) {
       setNoticesError(
-        "You must accept both Image Rights and Data Privacy to continue."
+        "You must accept both Image Rights and Data Privacy to continue.",
       );
       return;
     }
@@ -195,10 +195,32 @@ export default function RegistrationPage() {
 
   return (
     <MatchdayLayout>
-      <div className="grid md:grid-cols-3 gap-8 items-start">
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-100 transition-colors mt-8"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+      </div>
+      <div className="grid md:grid-cols-3 gap-8 items-start py-10">
         <div className="pointer-events-none absolute inset-0 opacity-10">
           <Image
-            src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763471645/Matchday-Logo_jnj6hl.webp"
+            src="https://centa-hr.s3.eu-west-3.amazonaws.com/companies/019bbc22-ee74-7bfa-a6af-0a801a3d2e24/stores/019bbc3e-20be-7f38-85ed-c6867a6c0cfc/media/files/tmp/019f1497-85b6-7ad9-ad48-92621761a0c0-image4-copy.png"
             alt="Guinness Matchday"
             fill
             className="object-contain object-center"
@@ -392,10 +414,10 @@ export default function RegistrationPage() {
         </section>
 
         {/* RIGHT: Banner (desktop only) */}
-        <aside className="hidden md:block bg-neutral-950/60 p-0 overflow-hidden">
+        <aside className="hidden md:block bg-neutral-950/60 p-0 overflow-hidden ">
           <div className="relative w-full h-full min-h-[630px] flex items-center justify-center">
             <Image
-              src="https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763472212/Official_Beer_of_the_PL_ek8e9l.webp"
+              src="https://centa-hr.s3.eu-west-3.amazonaws.com/companies/019bbc22-ee74-7bfa-a6af-0a801a3d2e24/stores/019bbc3e-20be-7f38-85ed-c6867a6c0cfc/media/files/tmp/019f1495-ba0f-77d3-89b5-06746c7ec8bf-image4.png"
               alt="Guinness Match Day"
               fill
               className="object-cover"

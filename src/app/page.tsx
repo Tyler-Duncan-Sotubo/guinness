@@ -36,7 +36,15 @@ export default function HomePage() {
         <div className="relative z-10 px-4 py-4">
           {/* Hero section */}
           <section className="grid md:grid-cols-3 gap-10 items-center">
-            <div className="hidden md:block relative w-full max-w-sm mx-auto md:max-w-none aspect-3/4 md:aspect-3/5"></div>
+            <div className="hidden md:block relative w-full max-w-sm mx-auto md:max-w-none aspect-3/4 md:aspect-3/5">
+              <Image
+                src="https://centa-hr.s3.eu-west-3.amazonaws.com/companies/019bbc22-ee74-7bfa-a6af-0a801a3d2e24/stores/019bbc3e-20be-7f38-85ed-c6867a6c0cfc/media/files/tmp/019f1498-98eb-783e-ae53-9d7e10408a9e-image1.png"
+                alt="Guinness Matchday"
+                fill
+                className="object-contain object-center"
+                priority
+              />
+            </div>
 
             <div className="col-span-2">
               <div className="mb-4">

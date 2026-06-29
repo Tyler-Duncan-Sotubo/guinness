@@ -17,7 +17,7 @@ export function MatchdayLayout({ children }: MatchdayLayoutProps) {
         bg-[url('https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763472025/Mobile_au5sug.webp')]
 
         /* Desktop background */
-        md:bg-[url('https://res.cloudinary.com/dw1ltt9iz/image/upload/v1763472026/Desktop_t6jr2x.webp')]
+        md:bg-[url('https://centa-hr.s3.eu-west-3.amazonaws.com/companies/019bbc22-ee74-7bfa-a6af-0a801a3d2e24/stores/019bbc3e-20be-7f38-85ed-c6867a6c0cfc/media/files/tmp/019f149c-88ff-7cc1-be38-d2028231761c-guiness-bg.png')]
 
         bg-cover bg-center
       "
